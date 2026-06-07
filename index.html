@@ -1,0 +1,3305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZA Affordability Flow — May 22–Jun 3, 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+<style>
+/* ── DS2025 tokens ── */
+/* ============================================================
+   FidoApp DS2025 — Design Tokens (CSS Custom Properties)
+   Source of truth:
+     - shared-ui/.../widgets/designSystem2025/color/Brand.kt
+     - shared-ui/.../widgets/designSystem2025/color/Alias.kt
+     - shared-ui/.../widgets/designSystem2025/color/Map.kt
+     - shared-ui/.../compose/WalletPaddings.kt
+     - presentation/.../designSystem/DesignSystem.kt (typography sizes)
+     - shared-ui/.../widgets/designSystem2025/Shadows.kt
+
+   Convention:
+     - dp -> px 1:1 (mdpi baseline). The phone frame is 375 css px wide.
+     - Color tokens follow the Kotlin names verbatim (no abbreviations).
+   ============================================================ */
+
+:root {
+  /* ─── Brand palette (Brand.kt) ────────────────────────────── */
+  --c-bw0: #FFFFFF;
+  --c-bw100: #000000;
+
+  --c-neutralBlue0: #FFFFFF;
+  --c-neutralBlue100: #F4F7FA;
+  --c-neutralBlue200: #E2EBF3;
+  --c-neutralBlue300: #CFDAE5;
+  --c-neutralBlue400: #B1BFCD;
+  --c-neutralBlue500: #94A6B8;
+  --c-neutralBlue600: #627384;
+  --c-neutralBlue700: #414D58;
+  --c-neutralBlue800: #262D33;
+  --c-neutralBlue900: #1B2632;
+  --c-neutralBlack: #2C3030;
+
+  /* opacity tokens: encoded as #RRGGBBAA */
+  --c-opacity100: #FFFFFF66;  /* 40% white */
+  --c-opacity200: #FFFFFFA6;  /* 65% white */
+  --c-opacity300: #759BBD33;  /* 20% blue-tinted gray */
+  --c-opacity400: #759BBD5E;  /* 37% blue-tinted gray */
+  --c-opacity500: #1B263280;  /* 50% dark */
+  --c-opacity600: #1B2632A6;  /* 65% dark */
+
+  --c-green100: #CFFCE9;
+  --c-green200: #08C79F;
+  --c-green500: #008A7A;
+  --c-green600: #006B5F;
+  --c-green700: #093D35;
+
+  --c-red100: #FEE2E2;
+  --c-red500: #EF4444;
+  --c-red600: #DC2626;
+
+  --c-yellow100: #FEF3C7;
+  --c-yellow300: #FCD34D;
+  --c-yellow600: #D97006;
+
+  --c-blue100: #134D86;
+  --c-blue200: #0D3F72;
+  --c-blue300: #0A335C;
+
+  --c-pink50: #FEE1EF;
+  --c-pink100: #FCB0D5;
+  --c-pink200: #FA7FBA;
+  --c-pink300: #F84EA0;
+  --c-pink400: #F71D85;
+  --c-pink500: #D6086B;
+  --c-pink600: #A70654;
+  --c-pink700: #76043B;
+  --c-pink800: #450223;
+
+  --c-aqua25: #E5FDFF;
+  --c-aqua50: #D6FCFF;
+  --c-aqua80: #B2F9FF;
+  --c-aqua100: #A3F8FF;
+  --c-aqua200: #70F4FF;
+  --c-aqua300: #3DF0FF;
+  --c-aqua400: #0AECFF;
+  --c-aqua500: #00C6D6;
+  --c-aqua600: #0097A3;
+  --c-aqua700: #006870;
+  --c-aqua800: #00393D;
+
+  --c-lime50: #F9FFCC;
+  --c-lime100: #F3FF99;
+  --c-lime200: #EEFF66;
+  --c-lime300: #E8FF34;
+  --c-lime400: #E2FF00;
+  --c-lime500: #B5CC00;
+  --c-lime600: #889900;
+  --c-lime700: #5A6600;
+  --c-lime800: #2D3300;
+
+  --c-mauve50: #FEEBFF;
+  --c-mauve100: #FABAFF;
+  --c-mauve200: #F685FF;
+  --c-mauve300: #F252FF;
+  --c-mauve400: #EF1FFF;
+  --c-mauve500: #DA00EB;
+  --c-mauve600: #AA00B8;
+  --c-mauve700: #7B0085;
+  --c-mauve800: #4C0052;
+
+  /* ─── Semantic aliases (Alias.kt) ─────────────────────────── */
+  --c-success100: var(--c-green100);
+  --c-success200: var(--c-green200);
+  --c-success500: var(--c-green500);
+  --c-success600: var(--c-green600);
+  --c-success700: var(--c-green700);
+
+  --c-warning100: var(--c-yellow100);
+  --c-warning300: var(--c-yellow300);
+  --c-warning600: var(--c-yellow600);
+
+  --c-negative100: var(--c-red100);
+  --c-negative500: var(--c-red500);
+  --c-negative600: var(--c-red600);
+
+  --c-neutral0:   var(--c-bw0);
+  --c-neutral100: var(--c-neutralBlue100);
+  --c-neutral200: var(--c-neutralBlue200);
+  --c-neutral300: var(--c-neutralBlue300);
+  --c-neutral400: var(--c-neutralBlue400);
+  --c-neutral500: var(--c-neutralBlue500);
+  --c-neutral600: var(--c-neutralBlue600);
+  --c-neutral700: var(--c-neutralBlue700);
+  --c-neutral800: var(--c-neutralBlue800);
+  --c-neutral900: var(--c-neutralBlue900);
+  --c-neutral1000: var(--c-bw100);
+
+  --c-accent100: var(--c-blue100);
+  --c-accent200: var(--c-blue200);
+  --c-accent300: var(--c-blue300);
+
+  --c-primary50:  var(--c-pink50);
+  --c-primary100: var(--c-pink100);
+  --c-primary200: var(--c-pink200);
+  --c-primary300: var(--c-pink300);
+  --c-primary400: var(--c-pink400);
+  --c-primary500: var(--c-pink500);
+  --c-primary600: var(--c-pink600);
+  --c-primary700: var(--c-pink700);
+  --c-primary800: var(--c-pink800);
+
+  --c-clearGray:      var(--c-opacity300);
+  --c-clearGrayDark:  var(--c-opacity400);
+  --c-clearBlack:     var(--c-opacity500);
+  --c-clearBlackDark: var(--c-opacity600);
+  --c-clearWhite:     var(--c-opacity100);
+  --c-clearWhiteDark: var(--c-opacity200);
+
+  --c-positive100: var(--c-green100);
+  --c-positive400: var(--c-green200);
+  --c-positive500: var(--c-green500);
+  --c-positive600: var(--c-green600);
+  --c-positive700: var(--c-green700);
+
+  /* ─── BorderTokens ────────────────────────────────────────── */
+  --border-general:  var(--c-neutral300);
+  --border-focused:  var(--c-neutral900);
+  --border-default:  var(--c-neutral400);
+  --border-disabled: var(--c-neutral300);
+  --border-success:  var(--c-success200);
+  --border-warning:  var(--c-warning300);
+  --border-negative: var(--c-negative500);
+  --border-active:   var(--c-primary500);
+
+  /* ─── SurfaceTokens ───────────────────────────────────────── */
+  --surface-white:        var(--c-neutral0);
+  --surface-whiteClear:   var(--c-opacity200);
+  --surface-light:        var(--c-neutral100);
+  --surface-medium:       var(--c-neutral200);
+  --surface-mediumClear:  var(--c-opacity300);
+  --surface-disable:      var(--c-neutral100);
+  --surface-accentLight:  var(--c-accent100);
+  --surface-accentMedium: var(--c-accent200);
+  --surface-accentDark:   var(--c-accent300);
+  --surface-successLight: var(--c-success100);
+  --surface-successDark:  var(--c-success500);
+  --surface-warning:      var(--c-warning100);
+  --surface-warningDark:  var(--c-warning600);
+  --surface-negativeLight:var(--c-negative100);
+  --surface-negativeDark: var(--c-negative600);
+  --surface-highlight:    var(--c-aqua50);
+  --surface-notice:       var(--c-neutral900);
+
+  /* ─── IconTokens ──────────────────────────────────────────── */
+  --icon-dark:        var(--c-neutral900);
+  --icon-medium:      var(--c-neutral700);
+  --icon-onActive:    var(--c-neutral0);
+  --icon-onDark:      var(--c-neutral0);
+  --icon-active:      var(--c-primary500);
+  --icon-accent:      var(--c-accent100);
+  --icon-success:     var(--c-success200);
+  --icon-successDark: var(--c-success600);
+  --icon-warning:     var(--c-warning600);
+  --icon-negative:    var(--c-negative600);
+  --icon-disable:     var(--c-neutral500);
+
+  /* ─── TextTokens ──────────────────────────────────────────── */
+  --text-darkGray:    var(--c-neutral700);
+  --text-textDark:    var(--c-neutral900);
+  --text-titleMedium: var(--c-neutral700);
+  --text-titleLight:  var(--c-neutral500);
+  --text-bodyRegular: var(--c-neutral800);
+  --text-bodyMedium:  var(--c-neutral700);
+  --text-bodyLight:   var(--c-neutral600);
+  --text-action:      var(--c-primary500);
+  --text-action2:     var(--c-accent100);
+  --text-success:     var(--c-success600);
+  --text-warning:     var(--c-warning600);
+  --text-negative:    var(--c-negative600);
+  --text-onAction:    var(--c-neutral0);
+  --text-onDark:      var(--c-neutral0);
+  --text-disable:     var(--c-neutral500);
+
+  /* ─── ButtonTokens ────────────────────────────────────────── */
+  --button-primaryActive:    var(--c-primary500);
+  --button-primaryPressed:   var(--c-primary600);
+  --button-blackActive:      var(--c-neutral900);
+  --button-blackPressed:     var(--c-neutral700);
+  --button-secondaryActive:  var(--c-clearGray);
+  --button-secondaryPressed: var(--c-clearGrayDark);
+  --button-tertiaryActive:   var(--c-neutral0);
+  --button-tertiaryPressed:  var(--c-neutral100);
+  --button-disable:          var(--c-clearGray);
+  --button-toggleOn:         var(--c-success200);
+  --button-toggleOff:        var(--c-neutral200);
+  --button-chip1On:          var(--c-primary500);
+  --button-chip2On:          var(--c-neutral900);
+  --button-chipOff:          var(--c-neutral0);
+  --button-navBlack:         var(--c-neutral900);
+  --button-navBlackPressed:  var(--c-neutral700);
+  --button-navBlack50:       var(--c-clearBlack);
+  --button-navBlack50Pressed:var(--c-clearBlackDark);
+  --button-navWhite:         var(--c-neutral0);
+  --button-navWhite50:       var(--c-clearWhite);
+  --button-navWhite50Pressed:var(--c-clearWhiteDark);
+  --button-navGray:          var(--c-clearGray);
+  --button-navGrayPressed:   var(--c-clearGrayDark);
+
+  /* ─── Paddings (WalletPaddings.kt) ────────────────────────── */
+  --p-zero: 0px;
+  --p-extraExtraSmall: 2px;
+  --p-extraSmall: 4px;
+  --p-semiSmall: 6px;
+  --p-small: 8px;
+  --p-semiMedium: 12px;
+  --p-medium: 16px;
+  --p-screen: 20px;
+  --p-semiLarge: 24px;
+  --p-large: 32px;
+  --p-doubleScreen: 40px;
+  --p-semiExtraLarge: 48px;
+  --p-extraLarge: 64px;
+  --p-extraExtraLarge: 72px;
+  --p-extraExtraExtraLarge: 80px;
+
+  /* ─── Dimensions (commonly-referenced, derived) ───────────── */
+  --d-button-cornerRadius: 28px;
+  --d-button-largeHeight: 56px;
+  --d-button-mediumHeight: 44px;
+  --d-button-smallHeight: 36px;
+  --d-button-tinyButtonSize: 32px;
+  --d-button-tinyButton2026Size: 40px;
+  --d-textButton-cornerRadius: 12px;
+
+  --d-card-cornerRadius: 8px;     /* = Paddings.small */
+  --d-label-cornerRadius: 999px;  /* pill */
+  --d-label-bigHeight: 24px;
+  --d-label-smallHeight: 20px;
+
+  --d-snackbar-cornerRadius: 14px;
+  --d-snackbar-minHeight: 48px;
+
+  --d-stepper-circleSize: 32px;
+  --d-stepper-dividerMinHeight: 24px;
+
+  --d-radio-size: 24px;
+
+  --d-header-height: 56px;
+  --d-header-horizontalPadding: 8px;
+  --d-header-buttonAreaSize: 40px;
+
+  --d-bottomSheet-cornerRadius: 20px;
+  --d-popup-cornerRadius: 20px;
+
+  /* ─── Shadows (Shadows.kt → layered box-shadow) ───────────── */
+  --shadow-small:
+    0 4px 6px -1px rgba(0, 0, 0, 0.08);
+
+  --shadow-medium:
+    0 8px 24px 0 rgba(0, 0, 0, 0.12),
+    0 8px 16px -4px rgba(0, 0, 0, 0.08);
+
+  --shadow-large:
+    0 32px 48px -8px rgba(0, 0, 0, 0.20),
+    0 6px 24px -2px rgba(0, 0, 0, 0.06),
+    0 4px 8px -2px rgba(0, 0, 0, 0.06);
+
+  --shadow-pink:
+    0 4px 6px -1px rgba(0, 0, 0, 0.16),
+    0 8px 24px -4px rgba(214, 8, 107, 0.36);
+
+  --shadow-bottomSheet:
+    0 -8px 24px 0 rgba(0, 0, 0, 0.12),
+    0 -8px 16px -4px rgba(0, 0, 0, 0.08);
+
+  /* ─── Phone frame ─────────────────────────────────────────── */
+  --frame-width: 375px;
+  --frame-height: 812px;
+  --frame-radius: 40px;
+  --frame-statusBar-height: 44px;
+  --frame-navBar-height: 34px;
+
+  /* ─── Page (mockup chrome) ────────────────────────────────── */
+  --page-bg: #0F172A;
+  --page-text: #E2E8F0;
+  --page-muted: #94A3B8;
+  --page-chip-bg: #1E293B;
+  --page-chip-border: #334155;
+}
+
+/* Dark UI variants are handled per-screen via .dark-bg / explicit token overrides. */
+
+/* ── DS2025 typography ── */
+/* ============================================================
+   FidoApp DS2025 — Typography
+   Source: presentation/.../designSystem/DesignSystem.kt
+   Mirrors the 28 DS2025 styles + the "old" Material wrappers that
+   newer composables (Heading4, BodyLarge, etc.) still hit.
+
+   Convention:
+     - All sizes in px (1sp ≈ 1px at default scale).
+     - lineHeight = fontSize * lineHeightFactor.
+     - Poppins for display/heading/title/caption. DM Sans for body.
+     - Both fonts loaded via Google Fonts in screen-renderer.html.
+   ============================================================ */
+
+.t {
+  margin: 0;
+  color: var(--text-bodyRegular);
+  font-feature-settings: "kern" 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* ─── Display (Poppins) ───────────────────────────────────── */
+.t-displayBold1 { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 64px; letter-spacing: -0.8px; line-height: 76.8px; }
+.t-display1     { font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 64px; letter-spacing: -1.0px; line-height: 76.8px; }
+.t-displayBold2 { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 48px; letter-spacing: -0.4px; line-height: 57.6px; }
+.t-display2     { font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 48px; letter-spacing: -0.6px; line-height: 57.6px; }
+
+/* ─── Heading (Poppins) ───────────────────────────────────── */
+.t-hBold1 { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 32px; letter-spacing: -0.4px; line-height: 38.4px; }
+.t-h1     { font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 32px; letter-spacing: 0;      line-height: 38.4px; }
+.t-hBold2 { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 28px; letter-spacing: -0.4px; line-height: 35px; }
+.t-h2     { font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 28px; letter-spacing: -0.2px; line-height: 35px; }
+.t-hBold3 { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.3px; line-height: 31.2px; }
+.t-h3     { font-family: 'Poppins', sans-serif; font-weight: 400; font-size: 24px; letter-spacing: 0;      line-height: 31.2px; }
+
+/* ─── Title (Poppins) ─────────────────────────────────────── */
+.t-titleBold1 { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 20px; letter-spacing: -0.3px; line-height: 26px; }
+.t-title1     { font-family: 'Poppins', sans-serif; font-weight: 400; font-size: 20px; letter-spacing: 0;      line-height: 27px; }
+.t-titleBold2 { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; letter-spacing: -0.2px; line-height: 20.8px; }
+.t-title2     { font-family: 'Poppins', sans-serif; font-weight: 400; font-size: 16px; letter-spacing: 0.2px;  line-height: 20.8px; }
+.t-titleBold3 { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; letter-spacing: 0;      line-height: 18.2px; }
+.t-title3     { font-family: 'Poppins', sans-serif; font-weight: 400; font-size: 14px; letter-spacing: 0.3px;  line-height: 18.2px; }
+.t-title4     { font-family: 'Poppins', sans-serif; font-weight: 400; font-size: 12px; letter-spacing: 0.3px;  line-height: 16.8px; }
+
+/* ─── Body (DM Sans) ──────────────────────────────────────── */
+.t-bodyBold1 { font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 17px; letter-spacing: -0.3px; line-height: 25.5px; }
+.t-body1     { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 17px; letter-spacing: 0;      line-height: 25.5px; }
+.t-bodyBold2 { font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: -0.3px; line-height: 22.5px; }
+.t-body2     { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; letter-spacing: 0;      line-height: 22.5px; }
+.t-bodyBold3 { font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 13px; letter-spacing: 0.3px;  line-height: 19.5px; }
+.t-body3     { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 13px; letter-spacing: 0.3px;  line-height: 19.5px; }
+
+/* ─── Caption (Poppins) ───────────────────────────────────── */
+.t-captionBold1 { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 12px; letter-spacing: 0.3px; line-height: 18px; }
+.t-caption1     { font-family: 'Poppins', sans-serif; font-weight: 400; font-size: 12px; letter-spacing: 0.3px; line-height: 18px; }
+.t-caption2     { font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 10px; letter-spacing: 0;     line-height: 13px; }
+
+/* ─── Error helper (matches @Composable ErrorText) ───────── */
+.t-errorText { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 13px; letter-spacing: 0.3px; line-height: 19.5px; color: var(--text-negative); }
+
+/* ─── Link helper (TextWithLinks default link style) ─────── */
+.t-link { color: var(--text-action2); text-decoration: underline; }
+
+/* ── DS2025 screen frame ── */
+/* ============================================================
+   FidoApp DS2025 — Screen Frame (page chrome + phone shell)
+   Mirrors ScreenTemplate (widgets/Screen.kt) and the standard
+   iOS-style phone canvas used for mockups.
+   ============================================================ */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--page-bg);
+  color: var(--page-text);
+  padding: 32px 20px;
+}
+
+/* ─── Page header (event metadata above the phone) ───────── */
+.page-header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  margin-bottom: 8px;
+  color: #F8FAFC;
+}
+.page-header p {
+  font-size: 14px;
+  color: var(--page-muted);
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.event-meta {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 32px;
+}
+.meta-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--page-chip-border);
+  background: var(--page-chip-bg);
+  color: #CBD5E1;
+}
+.meta-chip.pink {
+  background: rgba(214, 8, 107, 0.18);
+  border-color: var(--c-primary500);
+  color: #FCB0D5;
+}
+.meta-chip.green {
+  background: rgba(8, 199, 159, 0.18);
+  border-color: var(--c-success200);
+  color: #6EE7B7;
+}
+.meta-chip.muted {
+  background: rgba(148, 163, 184, 0.12);
+  border-color: #475569;
+}
+
+/* ─── Phone frame (375 x 812 — iPhone-ish) ──────────────── */
+.phone-container { display: flex; justify-content: center; }
+
+.phone-frame {
+  width: var(--frame-width);
+  height: var(--frame-height);
+  background: var(--surface-white);
+  /* default text color so primitives that rely on inheritance stay readable on white */
+  color: var(--text-bodyRegular);
+  border-radius: var(--frame-radius);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(148, 163, 184, 0.2);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dynamic island / status bar */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 28px 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-textDark);
+  flex-shrink: 0;
+  height: var(--frame-statusBar-height);
+}
+.status-bar-right { display: flex; align-items: center; gap: 5px; }
+.status-bar-right svg { width: 16px; height: 16px; }
+
+/* ─── App bar / Top bar (DS2025 Header / WalletAppBar) ───── */
+.app-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--d-header-height);
+  padding: 0 var(--d-header-horizontalPadding);
+  flex-shrink: 0;
+  position: relative;
+}
+.app-bar-slot { display: flex; align-items: center; min-width: var(--d-header-buttonAreaSize); }
+.app-bar-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 12px;     /* Title4 */
+  letter-spacing: 0.3px;
+  color: var(--text-textDark);
+  flex: 1;
+  text-align: center;
+  padding: 0 4px;
+}
+.app-bar-action {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-action);
+  padding: 8px 12px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+/* ─── Content area (ScrollableContent) ───────────────────── */
+.screen-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--p-screen) 12px;
+  position: relative;
+}
+.screen-content.no-horiz-padding { padding-left: 0; padding-right: 0; }
+.screen-content::-webkit-scrollbar { width: 0; }
+
+/* Sticky bottom slot (BottomButtonBox container) */
+.bottom-bar {
+  flex-shrink: 0;
+  background: var(--surface-white);
+  padding: var(--p-screen) var(--p-screen) var(--p-large);
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-small);
+  align-items: stretch;
+  position: relative;
+  z-index: 2;
+}
+.bottom-bar.center { align-items: center; }
+.bottom-bar:empty { display: none; }
+/* Hairline border + subtle top shadow gives clean separation from scroll content */
+.bottom-bar {
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+/* Dark-background variant (when screen has dark theme) */
+.phone-frame.dark .screen-content,
+.phone-frame.dark .bottom-bar,
+.phone-frame.dark .app-bar,
+.phone-frame.dark .status-bar {
+  background: var(--c-neutral900);
+  color: var(--text-onDark);
+}
+.phone-frame.dark .app-bar-title { color: var(--text-onDark); }
+
+/* Optional background gradient layer behind content */
+.bg-layer {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.app-bar, .screen-content, .bottom-bar { position: relative; z-index: 1; }
+
+/* ─── Legend (below phone) ──────────────────────────────── */
+.legend {
+  max-width: 700px;
+  margin: 32px auto 0;
+  padding: 20px;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  color: #CBD5E1;
+}
+.legend h3 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 14px;
+  color: #F8FAFC;
+}
+.legend h4 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94A3B8;
+  margin: 16px 0 8px;
+}
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px 16px;
+}
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; background: #475569; flex-shrink: 0; }
+
+/* ─── Action highlight pulse ────────────────────────────── */
+@keyframes pulse-pink {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(247, 29, 133, 0.55); }
+  50%      { box-shadow: 0 0 0 14px rgba(247, 29, 133, 0); }
+}
+.action-highlight {
+  animation: pulse-pink 1.6s ease-in-out infinite;
+  position: relative;
+}
+.action-highlight::after {
+  content: attr(data-action-label);
+  position: absolute;
+  top: -28px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--c-primary500);
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ─── Helpers ───────────────────────────────────────────── */
+.flex { display: flex; }
+.col  { display: flex; flex-direction: column; }
+.row  { display: flex; flex-direction: row; align-items: center; }
+.spacer { flex: 1; }
+.gap-xs { gap: 4px; }
+.gap-s  { gap: 8px; }
+.gap-m  { gap: 12px; }
+.gap-l  { gap: 16px; }
+.pt-screen { padding-top: var(--p-screen); }
+.pb-screen { padding-bottom: var(--p-screen); }
+.pt-double { padding-top: var(--p-doubleScreen); }
+.center-text { text-align: center; }
+
+/* ── DS2025 primitives ── */
+/* ============================================================
+   FidoApp DS2025 — Component Primitives
+   Each section mirrors one Composable from
+   shared-ui/.../widgets/designSystem2025/ (or core widgets/).
+   Class naming: .ds-{component}[-{variant}][-{size}][-{state}]
+   ============================================================ */
+
+/* =========================================================
+   BASE — Icon span (used everywhere via DS.icon())
+   Default to 20x20; component-specific rules override.
+   ========================================================= */
+.ds-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 0;
+  overflow: hidden;
+  width: 20px;
+  height: 20px;
+}
+.ds-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* Common per-context sizes */
+.ds-step-circle .ds-icon { width: 16px; height: 16px; }
+.ds-docStatusCard .doc-icon { width: 36px; height: 36px; }
+.ds-numberedItem .ds-icon { width: 14px; height: 14px; }
+.ds-stickyBanner .banner-icon .ds-icon { width: 28px; height: 28px; }
+.ds-snackbar .ds-icon { width: 20px; height: 20px; }
+
+/* =========================================================
+   BUTTONS  (designSystem2025/Buttons.kt)
+   ========================================================= */
+.ds-btn {
+  font-family: 'Poppins', sans-serif;
+  border: none;
+  border-radius: var(--d-button-cornerRadius);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 24px;
+  transition: background 0.15s ease;
+  user-select: none;
+  white-space: nowrap;
+  width: 100%;
+}
+.ds-btn:focus { outline: none; }
+
+/* Sizes — height + typography */
+.ds-btn-large  { height: var(--d-button-largeHeight);  font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 18.2px; }
+.ds-btn-medium { height: var(--d-button-mediumHeight); font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 18.2px; }
+.ds-btn-small  { height: var(--d-button-smallHeight);  font-size: 12px; font-weight: 600; letter-spacing: 0.3px; line-height: 18px; padding: 0 16px; }
+
+/* Styles */
+.ds-btn-primary           { background: var(--button-primaryActive);    color: white; }
+.ds-btn-primary:hover     { background: var(--button-primaryPressed); }
+.ds-btn-primary.disabled  { background: var(--button-disable);          color: var(--text-disable); cursor: not-allowed; }
+
+.ds-btn-secondaryBlack    { background: var(--button-blackActive);      color: white; }
+.ds-btn-secondaryGray     { background: var(--button-secondaryActive);  color: var(--text-textDark); }
+.ds-btn-special           { background: var(--button-primaryActive);    color: white; text-transform: uppercase; box-shadow: var(--shadow-pink); }
+.ds-btn-specialNoCaps     { background: var(--button-primaryActive);    color: white; box-shadow: var(--shadow-pink); }
+.ds-btn-whitePrimary      { background: var(--surface-white);           color: var(--text-textDark); border: 1px solid var(--border-default); }
+
+/* Tertiary / Text / Link variants (less prominent, smaller corner + height) */
+.ds-btn-tertiary,
+.ds-btn-text,
+.ds-btn-link {
+  background: transparent;
+  border-radius: var(--d-textButton-cornerRadius);
+}
+.ds-btn-tertiary { color: var(--text-textDark); }
+.ds-btn-text     { color: var(--text-textDark); }
+.ds-btn-link     { color: var(--text-action2);  text-decoration: underline; }
+.ds-btn-link.ds-btn-large { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 17px; }
+.ds-btn-link.ds-btn-small { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; }
+
+/* Text/Link/Tertiary buttons use smaller heights — they're less prominent. */
+.ds-btn-tertiary.ds-btn-large,
+.ds-btn-text.ds-btn-large,
+.ds-btn-link.ds-btn-large { height: 44px; }
+.ds-btn-tertiary.ds-btn-medium,
+.ds-btn-text.ds-btn-medium,
+.ds-btn-link.ds-btn-medium { height: 36px; }
+.ds-btn-tertiary.ds-btn-small,
+.ds-btn-text.ds-btn-small,
+.ds-btn-link.ds-btn-small { height: 32px; }
+
+/* Navigation styles (circular) */
+.ds-btn-navWhite,
+.ds-btn-navBlack {
+  width: var(--d-button-mediumHeight); height: var(--d-button-mediumHeight); padding: 0;
+  border-radius: 50%;
+}
+.ds-btn-navBlack { background: var(--button-navBlack); color: white; }
+.ds-btn-navWhite { background: var(--button-navWhite); color: var(--text-textDark); border: 1px solid var(--border-general); }
+
+/* Icon-only square */
+.ds-btn.icon-only { width: var(--d-button-largeHeight); padding: 0; }
+.ds-btn-medium.icon-only { width: var(--d-button-mediumHeight); }
+.ds-btn-small.icon-only  { width: var(--d-button-smallHeight); }
+.ds-btn .ds-icon { width: 24px; height: 24px; flex-shrink: 0; }
+.ds-btn-small .ds-icon { width: 20px; height: 20px; }
+
+/* Arrow chevron in primary buttons */
+.ds-btn .chevron::after {
+  content: '›';
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 22px;
+  margin-left: 4px;
+  display: inline-block;
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   TINY BUTTON  (designSystem2025/TinyButton.kt)
+   ========================================================= */
+.ds-tinyBtn {
+  width: var(--d-button-tinyButtonSize);
+  height: var(--d-button-tinyButtonSize);
+  border-radius: 50%;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+}
+.ds-tinyBtn.tiny2026 {
+  width: var(--d-button-tinyButton2026Size);
+  height: var(--d-button-tinyButton2026Size);
+}
+.ds-tinyBtn-gray          { background: var(--c-neutral100); color: var(--icon-medium); }
+.ds-tinyBtn-darkGray      { background: var(--c-neutral200); color: var(--icon-medium); }
+.ds-tinyBtn-secondaryBlack{ background: var(--button-blackActive); color: white; }
+.ds-tinyBtn-white         { background: var(--surface-white); color: var(--icon-medium); border: 1px solid var(--border-general); }
+.ds-tinyBtn .ds-icon { width: 20px; height: 20px; }
+
+/* =========================================================
+   LABEL (badges)  (designSystem2025/Label.kt)
+   ========================================================= */
+.ds-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  border-radius: var(--d-label-cornerRadius);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  flex-shrink: 0;
+  align-self: flex-start;  /* don't stretch inside flex columns */
+  width: auto;
+}
+.ds-label-big   { height: var(--d-label-bigHeight);   font-size: 12px; letter-spacing: 0.3px; }
+.ds-label-small { height: var(--d-label-smallHeight); font-size: 10px; letter-spacing: 0;     }
+.ds-label .ds-icon { width: 12px; height: 12px; }
+.ds-label-big .ds-icon { width: 14px; height: 14px; }
+
+.ds-label-neutral     { background: var(--c-neutral200);     color: var(--text-textDark); }
+.ds-label-warning     { background: var(--c-warning100);     color: var(--text-warning); }
+.ds-label-positive    { background: var(--c-positive100);    color: var(--text-success); }
+.ds-label-sufficient  { background: var(--c-aqua50);         color: var(--c-aqua700); }
+.ds-label-notice      { background: var(--c-neutral900);     color: white; }
+.ds-label-disabled    { background: var(--c-neutral200);     color: var(--text-disable); }
+.ds-label-negative    { background: var(--c-negative100);    color: var(--text-negative); }
+.ds-label-dark        { background: var(--c-neutral900);     color: white; }
+.ds-label-negativeDark{ background: var(--c-negative600);    color: white; }
+
+/* =========================================================
+   CARD  (designSystem2025/cards/Card.kt)
+   ========================================================= */
+.ds-card {
+  background: var(--surface-white);
+  border-radius: var(--d-card-cornerRadius);
+  padding: 16px;
+  position: relative;
+}
+.ds-card.shadow-small  { box-shadow: var(--shadow-small); }
+.ds-card.shadow-medium { box-shadow: var(--shadow-medium); }
+.ds-card.shadow-large  { box-shadow: var(--shadow-large); }
+.ds-card.has-error     { border: 1px solid var(--border-negative); }
+
+/* =========================================================
+   NOTICE  (designSystem2025/Notice.kt)
+   ========================================================= */
+.ds-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+}
+.ds-notice.size-small { gap: 8px; }
+.ds-notice .ds-icon { width: 24px; height: 24px; flex-shrink: 0; margin-top: 1px; overflow: hidden; display: inline-flex; }
+.ds-notice.size-small .ds-icon { width: 20px; height: 20px; }
+.ds-notice .notice-body { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.ds-notice .notice-title { font-family: 'DM Sans', sans-serif; font-weight: 600; }
+.ds-notice .notice-text  { font-family: 'DM Sans', sans-serif; font-weight: 400; }
+.ds-notice.size-large .notice-title { font-size: 15px; line-height: 22.5px; }
+.ds-notice.size-large .notice-text  { font-size: 15px; line-height: 22.5px; }
+.ds-notice.size-small .notice-title { font-size: 13px; line-height: 19.5px; }
+.ds-notice.size-small .notice-text  { font-size: 13px; line-height: 19.5px; }
+
+.ds-notice-neutral        { background: var(--c-neutral100);     color: var(--text-textDark); }
+.ds-notice-neutral .ds-icon { color: var(--icon-medium); }
+.ds-notice-dark           { background: var(--c-neutral900);     color: white; }
+.ds-notice-dark .ds-icon  { color: white; }
+.ds-notice-positive       { background: var(--c-positive100);    color: var(--text-success); }
+.ds-notice-positive .ds-icon { color: var(--icon-successDark); }
+.ds-notice-warning        { background: var(--c-warning100);     color: var(--text-warning); }
+.ds-notice-warning .ds-icon { color: var(--icon-warning); }
+.ds-notice-actionRequired { background: var(--c-primary50);      color: var(--c-primary600); border: 1px solid var(--c-primary100); }
+.ds-notice-actionRequired .ds-icon { color: var(--c-primary500); }
+
+.ds-notice .notice-bullets { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+.ds-notice .notice-bullets li { display: flex; gap: 8px; align-items: baseline; }
+.ds-notice .notice-bullets li::before { content: '•'; flex-shrink: 0; }
+
+/* =========================================================
+   STICKY BANNER  (designSystem2025/StickyBanner.kt)
+   ========================================================= */
+.ds-stickyBanner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--surface-medium);
+  color: var(--text-textDark);
+  width: 100%;
+}
+.ds-stickyBanner.center { justify-content: center; text-align: center; }
+.ds-stickyBanner .banner-icon { width: 32px; height: 32px; flex-shrink: 0; }
+.ds-stickyBanner .banner-body { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.ds-stickyBanner .banner-title { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; line-height: 18.2px; color: var(--text-textDark); }
+.ds-stickyBanner .banner-desc  { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 13px; line-height: 19.5px; color: var(--text-titleMedium); }
+
+/* =========================================================
+   POPUP  (designSystem2025/Popup.kt)
+   ========================================================= */
+.ds-popup-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10;
+  padding: 0 20px;
+}
+.ds-popup {
+  background: var(--surface-white);
+  border-radius: var(--d-popup-cornerRadius);
+  width: 100%;
+  max-height: 92%;
+  display: flex; flex-direction: column;
+  padding: 16px 16px 20px;
+  position: relative;
+}
+.ds-popup-close {
+  position: absolute; top: 20px; right: 16px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--c-clearGray); color: var(--icon-medium);
+  border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.ds-popup-asset { align-self: center; padding-bottom: 20px; }
+.ds-popup-asset img { width: 150px; height: 150px; object-fit: contain; }
+.ds-popup-title { text-align: center; padding-top: 20px; }
+.ds-popup-desc  { text-align: center; padding-top: 8px; color: var(--text-bodyMedium); }
+.ds-popup .ds-btn { margin-top: var(--p-doubleScreen); }
+
+/* Small variant */
+.ds-popup.small .ds-popup-title { text-align: left; padding-top: 0; }
+.ds-popup.small .ds-popup-desc  { text-align: left; padding-top: 4px; padding-bottom: 0; }
+
+/* =========================================================
+   SNACKBAR / TOAST  (designSystem2025/inAppNotifications)
+   ========================================================= */
+.ds-snackbar-host {
+  position: absolute;
+  left: 0; right: 0;
+  display: flex; flex-direction: column; align-items: stretch;
+  padding: 0 var(--p-screen);
+  pointer-events: none;
+  z-index: 9;
+}
+.ds-snackbar-host.top    { top: calc(var(--frame-statusBar-height) + 8px); }
+.ds-snackbar-host.bottom { bottom: 80px; }
+
+.ds-snackbar {
+  min-height: var(--d-snackbar-minHeight);
+  border-radius: var(--d-snackbar-cornerRadius);
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 4px 8px rgba(0,0,0,0.10);
+}
+.ds-snackbar-default { background: var(--c-neutral900); color: white; }
+.ds-snackbar-success { background: var(--c-positive500); color: white; }
+.ds-snackbar-failure { background: var(--c-negative600); color: white; }
+.ds-snackbar .ds-icon { width: 20px; height: 20px; }
+.ds-snackbar .snack-text { flex: 1; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 13px; line-height: 19.5px; }
+.ds-snackbar .snack-cta {
+  font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 12px; letter-spacing: 0.3px;
+  background: transparent; border: none; color: inherit; cursor: pointer; padding: 4px 6px;
+}
+
+/* =========================================================
+   RADIO BUTTON  (designSystem2025/RadioButton.kt)
+   ========================================================= */
+.ds-radio-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 0; width: 100%;
+}
+.ds-radio-row.start { flex-direction: row; }
+.ds-radio-row.end   { flex-direction: row; }
+.ds-radio-row .label-col { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.ds-radio-row .label-col .title { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 20px; line-height: 26px; }
+.ds-radio-row .label-col .subtitle { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; line-height: 22.5px; color: var(--text-bodyMedium); }
+.ds-radio-row .label-col .single-line { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; line-height: 22.5px; }
+
+.ds-radio-indicator {
+  width: var(--d-radio-size); height: var(--d-radio-size);
+  border-radius: 50%;
+  border: 2px solid var(--border-default);
+  background: var(--surface-white);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.ds-radio-indicator.selected { border: 6px solid var(--c-primary500); }
+.ds-radio-indicator.error    { border-color: var(--border-negative); }
+.ds-radio-indicator.disabled { border-color: var(--border-disabled); background: var(--surface-disable); }
+.ds-radio-indicator.checkmark.selected { background: var(--c-primary500); border: none; color: white; }
+.ds-radio-indicator.checkmark.selected::after {
+  content: '';
+  width: 10px; height: 6px;
+  border-left: 2px solid white; border-bottom: 2px solid white;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+/* =========================================================
+   NUMBERED LIST ITEM  (designSystem2025/NumberedListItem.kt)
+   ========================================================= */
+.ds-numberedItem {
+  display: flex; align-items: baseline; gap: 8px;
+  padding: 8px 0;
+}
+.ds-numberedItem .circle {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--c-primary50);
+  color: var(--c-primary500);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 12px;
+  flex-shrink: 0;
+}
+.ds-numberedItem .text {
+  font-family: 'DM Sans', sans-serif; font-weight: 600;
+  font-size: 15px; line-height: 22.5px;
+  color: var(--text-textDark);
+}
+
+/* =========================================================
+   VERTICAL STEPPER ACTION ITEM  (widgets/VerticalStepperActionItem.kt)
+   ========================================================= */
+.ds-stepper { display: flex; flex-direction: column; }
+.ds-step {
+  display: flex;
+  gap: 12px;
+  min-height: 56px;
+}
+.ds-step-rail {
+  display: flex; flex-direction: column; align-items: center;
+  flex-shrink: 0;
+  width: var(--d-stepper-circleSize);
+}
+.ds-step-circle {
+  width: var(--d-stepper-circleSize); height: var(--d-stepper-circleSize);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px;
+  flex-shrink: 0;
+}
+.ds-step.active    .ds-step-circle { background: var(--c-primary500);  color: white; }
+.ds-step.inactive  .ds-step-circle { background: var(--c-neutral200);  color: var(--text-textDark); }
+.ds-step.inProgress .ds-step-circle{ background: var(--c-warning100);  color: var(--text-warning); }
+.ds-step.done      .ds-step-circle { background: var(--c-positive100); color: var(--text-success); }
+.ds-step.failed    .ds-step-circle { background: var(--c-negative100); color: var(--text-negative); }
+
+.ds-step-divider {
+  width: 2px; flex: 1;
+  background: var(--c-neutral300);
+  margin: 4px 0;
+  min-height: var(--d-stepper-dividerMinHeight);
+}
+.ds-step.active    .ds-step-divider { background: var(--c-primary300); }
+.ds-step.done      .ds-step-divider { background: var(--c-positive400); }
+
+.ds-step-body { flex: 1; padding-bottom: 16px; }
+.ds-step.last .ds-step-body { padding-bottom: 0; }
+.ds-step-title-row { display: flex; align-items: center; gap: 12px; }
+.ds-step-title {
+  font-family: 'Poppins', sans-serif; font-weight: 600;
+  font-size: 16px; line-height: 20.8px;
+  color: var(--text-textDark);
+}
+.ds-step.inactive .ds-step-title { color: var(--text-disable); }
+.ds-step.done     .ds-step-title { color: var(--text-success); }
+.ds-step-subtitle {
+  font-family: 'DM Sans', sans-serif; font-weight: 400;
+  font-size: 17px; line-height: 25.5px;
+  color: var(--text-bodyMedium);
+  margin-top: 4px;
+}
+.ds-step-info {
+  display: flex; align-items: center; gap: 4px;
+  font-family: 'DM Sans', sans-serif; font-weight: 400;
+  font-size: 15px; line-height: 22.5px;
+  color: var(--text-bodyMedium);
+  margin-top: 8px;
+}
+.ds-step-info .ds-icon { width: 14px; height: 14px; }
+.ds-step .ds-label { margin-top: 8px; }
+
+/* =========================================================
+   PROGRESS STEPPER  (widgets/ProgressStepper.kt)
+   ========================================================= */
+.ds-progressStepper {
+  display: flex; gap: 6px;
+  height: 4px;
+  width: 100%;
+}
+.ds-progressStepper .seg {
+  flex: 1;
+  background: var(--c-neutral200);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+.ds-progressStepper .seg.filled  { background: var(--c-primary500); }
+.ds-progressStepper .seg.partial::after {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: var(--fill, 50%);
+  background: var(--c-primary500);
+}
+
+/* =========================================================
+   CARD LIST SELECTOR  (designSystem2025/CardListSelector.kt)
+   ========================================================= */
+.ds-listCard {
+  background: transparent;
+  border: 1px solid var(--c-neutral300);
+  border-radius: 12px;
+  padding: 0 12px;
+  min-height: 64px;
+  display: flex; align-items: stretch;
+  width: 100%;
+  cursor: pointer;
+}
+.ds-listCard.selected { border: 2px solid var(--c-primary500); background: var(--c-primary50); padding: 0 11px; }
+.ds-listCard.error    { border-color: var(--border-negative); background: var(--c-negative100); }
+.ds-listCard.disabled { border-color: var(--border-disabled); background: var(--surface-disable); opacity: 0.6; cursor: not-allowed; }
+.ds-listCard .inner {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 0; flex: 1;
+}
+.ds-listCard .inner .text { flex: 1; font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; line-height: 22.5px; color: var(--text-textDark); }
+.ds-listCard .trailing {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+  font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px;
+  color: var(--text-textDark);
+}
+.ds-listCard.disabled .inner .text,
+.ds-listCard.disabled .trailing { color: var(--text-disable); }
+.ds-listCard .trailing .strike { text-decoration: line-through; color: var(--text-disable); }
+.ds-listCard .discount-chip {
+  background: var(--c-positive100); color: var(--text-success);
+  font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 12px;
+  padding: 4px 8px; border-radius: 4px;
+}
+
+/* =========================================================
+   DOCUMENT STATUS CARD  (designSystem2025/cards/DocumentStatusCard.kt)
+   ========================================================= */
+.ds-docStatusCard {
+  /* Inherits .ds-card */
+  display: flex; flex-direction: column; gap: 12px;
+  min-height: 80px;
+}
+.ds-docStatusCard .status-row { display: flex; justify-content: space-between; align-items: center; }
+.ds-docStatusCard .date { font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 10px; color: var(--text-disable); }
+.ds-docStatusCard .title-row { display: flex; align-items: center; gap: 8px; }
+.ds-docStatusCard .doc-icon { width: 36px; height: 36px; flex-shrink: 0; color: var(--icon-medium); }
+.ds-docStatusCard .doc-title { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; color: var(--text-textDark); flex: 1; }
+.ds-docStatusCard.declined .doc-title { color: var(--text-negative); }
+.ds-docStatusCard.approved  .doc-title { color: var(--text-disable); }
+.ds-docStatusCard.underReview .doc-title { color: var(--text-disable); }
+.ds-docStatusCard .cta { width: 32px; height: 32px; }
+.ds-docStatusCard .description { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 13px; color: var(--text-bodyMedium); padding-left: 44px; }
+.ds-docStatusCard .rejection-row {
+  display: flex; gap: 8px; align-items: flex-start;
+  color: var(--text-negative);
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+}
+
+/* =========================================================
+   UPLOAD DOCUMENT CARD  (designSystem2025/cards/UploadDocumentCard.kt)
+   ========================================================= */
+.ds-uploadCard {
+  /* Inherits .ds-card */
+  display: flex; align-items: center; gap: 12px;
+}
+.ds-uploadCard .asset {
+  width: 56px; height: 56px;
+  background: var(--c-neutral100);
+  border-radius: 8px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.ds-uploadCard .asset img { max-width: 100%; max-height: 100%; }
+.ds-uploadCard .body { flex: 1; padding: 0 12px 0 0; display: flex; flex-direction: column; gap: 4px; }
+.ds-uploadCard .body .title { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; color: var(--text-textDark); }
+.ds-uploadCard .body .desc  { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; color: var(--text-bodyMedium); }
+.ds-uploadCard .upload-btn  { width: 36px; height: 36px; }
+
+/* =========================================================
+   TEXT WITH LINKS  (designSystem2025/Links.kt)
+   ========================================================= */
+.ds-textLinks { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 13px; line-height: 19.5px; color: var(--text-bodyLight); }
+.ds-textLinks a { color: var(--text-action2); text-decoration: underline; cursor: pointer; }
+
+/* =========================================================
+   LOADER  (designSystem2025/Loader.kt)
+   ========================================================= */
+@keyframes ds-spin { to { transform: rotate(360deg); } }
+.ds-loader {
+  width: 24px; height: 24px;
+  border: 2px solid transparent;
+  border-top-color: var(--c-primary500);
+  border-radius: 50%;
+  animation: ds-spin 0.75s linear infinite;
+  display: inline-block;
+}
+.ds-loader.gray  { border-top-color: var(--c-neutral500); }
+.ds-loader.white { border-top-color: white; }
+.ds-loader.size-16 { width: 16px; height: 16px; }
+.ds-loader.size-20 { width: 20px; height: 20px; }
+.ds-loader.size-80 { width: 80px; height: 80px; border-width: 4px; }
+
+/* =========================================================
+   BOTTOM SHEET TEMPLATE  (designSystem2025/BottomSheetTemplateNew.kt)
+   ========================================================= */
+.ds-bottomSheet {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  background: var(--surface-white);
+  border-top-left-radius: var(--d-bottomSheet-cornerRadius);
+  border-top-right-radius: var(--d-bottomSheet-cornerRadius);
+  box-shadow: var(--shadow-bottomSheet);
+  padding: 12px 20px 24px;
+  display: flex; flex-direction: column;
+  z-index: 8;
+}
+.ds-bottomSheet .drag-handle {
+  width: 32px; height: 4px;
+  border-radius: 2px;
+  background: var(--c-neutral300);
+  align-self: center;
+  margin-bottom: 16px;
+}
+.ds-bottomSheet .sheet-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 12px;
+}
+.ds-bottomSheet .sheet-title {
+  font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px;
+  flex: 1;
+}
+
+/* =========================================================
+   TOP BAR CURVED BOTTOM  (designSystem2025/TopBarCurvedBottom.kt)
+   ========================================================= */
+.ds-topBarCurved {
+  position: relative;
+  padding: 12px 8px 32px;
+  background: linear-gradient(180deg, var(--c-primary500), var(--c-primary600));
+  color: white;
+  border-bottom-left-radius: 50% 24px;
+  border-bottom-right-radius: 50% 24px;
+}
+.ds-topBarCurved .nav-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 8px;
+}
+
+/* =========================================================
+   HEADER  (designSystem2025/Header.kt — TitleWithButtonsHeader)
+   ========================================================= */
+.ds-header {
+  display: flex; align-items: center;
+  height: var(--d-header-height);
+  padding: 0 var(--d-header-horizontalPadding);
+}
+.ds-header .ds-tinyBtn { margin: 0; }
+.ds-header .title {
+  flex: 1; text-align: center;
+  font-family: 'Poppins', sans-serif; font-weight: 400; font-size: 12px;
+  letter-spacing: 0.3px;
+  color: var(--text-textDark);
+}
+
+/* =========================================================
+   BOTTOM BUTTON BOX  (designSystem2025/BottomButtonBox.kt)
+   Wrapper — already handled via .bottom-bar in screen-frame.css.
+   This class adds the "horizontal arrangement" option.
+   ========================================================= */
+.ds-bottomBox-horizontal { flex-direction: row !important; gap: 16px; }
+.ds-bottomBox-horizontal > .ds-btn { flex: 1; }
+.ds-bottomBox-note {
+  font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 13px;
+  text-align: center; color: var(--text-bodyLight);
+}
+
+/* =========================================================
+   PATTERN HELPERS — recurring widgets across many screens
+   ========================================================= */
+
+/* ── OTP cells ─────────────────────────────────────────── */
+.ds-otpRow { display: flex; gap: 8px; justify-content: center; align-items: center; }
+.ds-otpCell {
+  width: 44px; height: 56px;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--surface-white);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 22px;
+  color: var(--text-textDark);
+}
+.ds-otpCell.filled { border-color: var(--border-focused); border-width: 2px; }
+.ds-otpCell.active {
+  border-color: var(--c-primary500); border-width: 2px;
+  box-shadow: 0 0 0 4px rgba(214, 8, 107, 0.12);
+}
+.ds-otpCell.error { border-color: var(--border-negative); }
+.ds-otpDash { color: var(--text-titleLight); font-size: 22px; padding: 0 4px; }
+
+/* ── PIN dots ──────────────────────────────────────────── */
+.ds-pinDots { display: flex; gap: 24px; justify-content: center; }
+.ds-pinDot {
+  width: 16px; height: 16px;
+  border-bottom: 2px solid var(--text-bodyLight);
+}
+.ds-pinDot.filled {
+  background: var(--c-primary500);
+  border-radius: 50%;
+  border-bottom: none;
+}
+
+/* ── Phone input row ───────────────────────────────────── */
+.ds-phoneRow { display: flex; gap: 8px; align-items: center; }
+.ds-countryPill {
+  display: flex; align-items: center; gap: 6px;
+  height: 56px; padding: 0 12px;
+  border: 1px solid var(--border-general);
+  border-radius: 12px;
+  background: var(--surface-white);
+  font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 17px;
+  color: var(--text-textDark);
+  flex-shrink: 0;
+}
+.ds-countryPill.disabled { background: var(--surface-disable); color: var(--text-disable); }
+.ds-countryPill .flag { font-size: 20px; }
+.ds-countryPill .caret { color: var(--text-disable); }
+.ds-phoneField {
+  flex: 1; height: 56px; padding: 0 16px;
+  border: 1px solid var(--border-general);
+  border-radius: 12px;
+  background: var(--surface-white);
+  font-family: 'DM Sans', sans-serif; font-size: 17px;
+  color: var(--text-textDark);
+  display: flex; align-items: center;
+}
+.ds-phoneField.focused { border-color: var(--border-focused); border-width: 2px; padding: 0 15px; }
+.ds-phoneField .placeholder { color: var(--text-disable); }
+
+/* ── Summary card (loan-review-style label/value cards) ── */
+.ds-summaryCard {
+  background: var(--surface-white);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: var(--shadow-small);
+}
+.ds-summaryCard.final { background: var(--c-primary50); }
+.ds-summaryCard + .ds-summaryCard { margin-top: 20px; }
+.ds-summaryRow { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.ds-summaryRow + .ds-summaryRow { margin-top: 12px; }
+.ds-summaryRow .lbl { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; color: var(--text-bodyMedium); }
+.ds-summaryRow .val { font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; color: var(--text-textDark); text-align: right; }
+.ds-summaryRow.top .lbl,
+.ds-summaryRow.top .val { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; color: var(--text-textDark); }
+.ds-summaryRow.calc .lbl { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; }
+.ds-summaryRow.calc .val { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 18px; }
+
+/* ── Hero banner (full-bleed top illustration) ─────────── */
+.ds-heroBanner {
+  width: 100%;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.ds-heroBanner.grad-pink { background: linear-gradient(135deg, #FCB0D5 0%, #F71D85 50%, #76043B 100%); }
+.ds-heroBanner.grad-blue { background: linear-gradient(135deg, #B2F9FF 0%, #0AECFF 50%, #006870 100%); }
+.ds-heroBanner.grad-mauve { background: linear-gradient(135deg, #FABAFF 0%, #DA00EB 50%, #4C0052 100%); }
+.ds-heroBanner::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.3), transparent 40%),
+    radial-gradient(circle at 20% 70%, rgba(255,255,255,0.15), transparent 40%);
+}
+.ds-heroLogo {
+  position: relative; z-index: 1;
+  width: 88px; height: 88px; border-radius: 22px;
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 30px; color: var(--c-primary500);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* ── Keyboard (iOS-style, anchored to phone bottom) ─────── */
+/* When using DS.keyboard(), also add class `has-keyboard-numeric` or `has-keyboard-qwerty`
+   to the .phone-frame so the content area gets a matching padding-bottom and the
+   bottom-bar (if any) sits just above the keyboard. */
+.ds-keyboard-wrap {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  z-index: 5;
+  display: flex; flex-direction: column;
+}
+.ds-keyboard {
+  background: #D1D5DB;
+  padding: 8px 4px 0;
+  position: relative;
+}
+.ds-keyboard-numeric { height: 240px; }
+.ds-keyboard-qwerty  { height: 290px; }
+
+.ds-kbd-row {
+  display: flex;
+  gap: 6px;
+  padding: 0 4px 8px;
+}
+.ds-kbd-row.indented { padding-left: 22px; padding-right: 22px; }
+
+.ds-kbd-key {
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  background: white;
+  border: none;
+  border-radius: 6px;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: #000;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+.ds-kbd-key.empty {
+  background: transparent;
+  box-shadow: none;
+  pointer-events: none;
+}
+.ds-kbd-key.backspace {
+  background: #ADB5BD;
+  font-size: 18px;
+  color: #000;
+}
+.ds-kbd-key .num { font-family: -apple-system, sans-serif; font-size: 22px; font-weight: 400; }
+.ds-kbd-key .sub { font-family: -apple-system, sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 2px; color: #000; margin-top: 1px; }
+
+/* QWERTY — letter rows are tighter, bottom row has utility keys */
+.ds-keyboard-qwerty .ds-kbd-key.letter { font-size: 18px; }
+.ds-keyboard-qwerty .ds-kbd-key.util {
+  background: #ADB5BD; font-size: 14px; flex: 1.3;
+}
+.ds-keyboard-qwerty .ds-kbd-row.bottom { gap: 4px; padding-bottom: 4px; }
+.ds-keyboard-qwerty .ds-kbd-key.space { flex: 5; font-size: 14px; color: #000; }
+.ds-keyboard-qwerty .ds-kbd-key.return { background: #4D8FE6; color: white; flex: 1.5; }
+
+/* Home indicator (iOS gesture bar) */
+.ds-kbd-home-indicator {
+  position: absolute;
+  bottom: 6px; left: 50%;
+  transform: translateX(-50%);
+  width: 134px; height: 5px;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 3px;
+}
+
+/* When keyboard is present, the phone-frame's flex content area shrinks to make room.
+   Apply by adding has-keyboard-{numeric|qwerty} to .phone-frame. */
+.phone-frame.has-keyboard-numeric { padding-bottom: 240px; }
+.phone-frame.has-keyboard-qwerty  { padding-bottom: 290px; }
+/* Extra bottom space for the autofill keyboard-accessory band (e.g., OTP) */
+.phone-frame.has-keyboard-numeric.has-autofill { padding-bottom: 300px; }
+
+/* ── Image placeholders ────────────────────────────────── */
+.ds-imgPlaceholder {
+  width: 100%;
+  border-radius: 12px;
+  background: var(--c-neutral100);
+  border: 1px dashed var(--border-default);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px;
+  padding: 16px;
+  color: var(--text-bodyLight);
+  font-family: 'DM Sans', sans-serif;
+}
+.ds-imgPlaceholder.remote { background: var(--c-aqua50); border-color: var(--c-aqua300); }
+.ds-imgPlaceholder .badge {
+  font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--text-bodyMedium);
+  padding: 2px 8px; border-radius: 4px;
+  background: rgba(15, 23, 42, 0.06);
+}
+.ds-imgPlaceholder.remote .badge { color: var(--c-aqua700); background: rgba(0, 198, 214, 0.12); }
+.ds-imgPlaceholder .name { font-size: 12px; text-align: center; }
+.ds-localImg { display: block; width: 100%; }
+
+/* =========================================================
+   TEXT FIELDS  (commonly used: WalletTextField — approximate)
+   Not strictly DS2025 but ubiquitous in forms.
+   ========================================================= */
+.ds-textField {
+  display: flex; flex-direction: column; gap: 4px;
+  width: 100%;
+}
+.ds-textField label {
+  font-family: 'Poppins', sans-serif; font-weight: 400; font-size: 12px;
+  color: var(--text-bodyLight); letter-spacing: 0.3px;
+}
+.ds-textField .input {
+  height: 56px;
+  padding: 0 16px;
+  border: 1px solid var(--border-general);
+  border-radius: 12px;
+  background: var(--surface-white);
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 17px;
+  color: var(--text-textDark);
+}
+.ds-textField .input.focused { border-color: var(--border-focused); }
+.ds-textField .input.error   { border-color: var(--border-negative); }
+.ds-textField .input.disabled{ background: var(--surface-disable); color: var(--text-disable); }
+.ds-textField .input input {
+  flex: 1; border: none; outline: none; background: transparent;
+  font: inherit; color: inherit;
+}
+.ds-textField .helper { font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--text-bodyLight); }
+.ds-textField .helper.error { color: var(--text-negative); }
+
+
+/* ── Page chrome ── */
+:root {
+  --bg: #0f1117; --card: #1a1d27; --card2: #1f2233; --border: #2a2d3a;
+  --text: #e4e4e7; --muted: #9ca3af; --dim: #6b7280;
+  --card-hover: #21253a; --accent: #6366f1; --accent-dim: rgba(99,102,241,0.1);
+  --gray: #4b5563; --gray-dim: rgba(75,85,99,0.2);
+  --shadow: 0 1px 3px rgba(0,0,0,0.3); --shadow-lg: 0 4px 12px rgba(0,0,0,0.5);
+  --green: #22c55e; --red: #ef4444; --orange: #f59e0b;
+}
+
+/* ── Step-flow progressive disclosure ── */
+.step-flow-wrap { overflow-x: auto; padding-bottom: 16px; }
+#steps-row { display: flex; align-items: flex-start; gap: 0; min-width: max-content; }
+.step-col { flex: 0 0 220px; display: flex; flex-direction: column; gap: 6px; z-index: 2; }
+.step-label { font-size: 10px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.5px; padding: 0 4px 2px; }
+.evt-card { display: flex; align-items: stretch;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+  cursor: pointer; transition: all 0.15s; box-shadow: var(--shadow); min-height: 36px; }
+.evt-card:hover { background: var(--card-hover); border-color: rgba(255,255,255,0.15); box-shadow: var(--shadow-lg); }
+.evt-card.expanded { border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.3), 0 0 12px rgba(99,102,241,0.15);
+  background: var(--accent-dim); }
+.evt-body { flex: 1; display: flex; align-items: center; gap: 8px; padding: 8px 10px; min-width: 0; }
+.evt-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center;
+  justify-content: center; flex-shrink: 0; font-size: 10px; }
+.evt-name { font-size: 12px; font-weight: 600; flex: 1; min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.evt-pct { font-size: 12px; font-weight: 600; flex-shrink: 0; }
+.evt-sidebar { width: 8px; flex-shrink: 0; }
+.evt-card .expand-chevron { font-size: 10px; color: var(--muted); transition: transform 0.2s; margin-left: 4px; flex-shrink: 0; }
+.evt-card.expanded .expand-chevron { transform: rotate(90deg); color: var(--accent); }
+.step-conn { flex: 0 0 80px; position: relative; z-index: 1; }
+.flow-svg { position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; overflow: visible; }
+.flow-line { transition: opacity 0.15s; }
+.step-col.entering { animation: stepSlideIn 0.35s ease-out forwards; }
+.step-conn.entering { animation: stepSlideIn 0.35s ease-out forwards; }
+@keyframes stepSlideIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+
+/* ── Mini phone mockups ── */
+.screen-mini-wrap { display: flex; justify-content: center; margin: 8px 0 4px; animation: phoneFadeIn 0.35s ease-out; }
+@keyframes phoneFadeIn { from { opacity: 0; transform: translateY(-8px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.mini-phone-frame { width: 160px; height: 346px; border-radius: 20px; overflow: hidden;
+  background: #0f1117; box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 0 1.5px #334155; flex-shrink: 0; }
+.mini-phone-inner { width: 375px; height: 812px; transform: scale(0.4267); transform-origin: top left;
+  overflow: hidden; }
+.mini-phone-inner .page-header { display: none !important; }
+.mini-phone-inner .event-meta  { display: none !important; }
+
+/* ── Step-flow hint ── */
+.flow-hint { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', -apple-system, sans-serif;
+  background: var(--bg); color: var(--text); padding: 24px; line-height: 1.5; }
+.header { max-width: 1400px; margin: 0 auto 24px; }
+.header h1 { font-size: 24px; font-weight: 700; }
+.header .sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.badges { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  background: var(--card2); border: 1px solid var(--border); }
+.badge.za { background: rgba(99,102,241,.15); border-color: #6366f1; color: #a78bfa; }
+.badge.warn { background: rgba(245,158,11,.14); border-color: #f59e0b; color: #f59e0b; }
+
+.tabs { display: flex; gap: 4px; max-width: 1400px; margin: 0 auto 20px;
+  border-bottom: 1px solid var(--border); }
+.tab { padding: 8px 18px; font-size: 13px; font-weight: 500; cursor: pointer;
+  border-radius: 6px 6px 0 0; color: var(--muted); background: none; border: none;
+  border-bottom: 2px solid transparent; transition: all .15s; }
+.tab:hover { color: var(--text); background: var(--card2); }
+.tab.active { color: #6366f1; border-bottom-color: #6366f1; background: var(--card2); }
+.section { max-width: 1400px; margin: 0 auto; display: none; }
+.section.active { display: block; }
+
+/* ── Sankey tab layout ── */
+.sankey-layout { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
+.sankey-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; }
+.sankey-card h2 { font-size: 15px; font-weight: 600; margin-bottom: 14px; color: #0f172a; }
+
+/* ── Mockup panel (hint strip) ── */
+.mockup-panel { display: none; }
+.mockup-placeholder { display: none; }
+
+/* ── Screen preview (below diagram) ── */
+#screen-preview {
+  margin-top: 16px;
+  background: #0F172A;
+  border-radius: 16px;
+  padding: 32px 24px 40px;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+#preview-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 22px; font-weight: 700;
+  color: #f8fafc; text-align: center;
+  margin-bottom: 6px;
+}
+#preview-meta {
+  font-size: 15px; color: #94a3b8;
+  text-align: center; margin-bottom: 28px;
+}
+.preview-phone {
+  width: 319px; height: 690px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,.7), 0 0 0 1px rgba(148,163,184,.12);
+}
+.preview-phone > div {
+  transform: scale(0.85); transform-origin: top left;
+  width: 375px; height: 812px;
+}
+.preview-phone .page-header { display: none !important; }
+.preview-phone .event-meta  { display: none !important; }
+
+/* ── App Screens gallery ─────────────────────────────────── */
+.screens-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 36px;
+  justify-content: center;
+  padding: 28px 0;
+}
+.screen-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.screen-card-header { text-align: center; }
+.screen-card-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.screen-card-meta { font-size: 11px; color: var(--muted); }
+.screen-card-phone {
+  width: 195px;
+  height: 422px;
+  overflow: hidden;
+  border-radius: 22px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.45);
+}
+.screen-card-phone > div { transform: scale(0.52); transform-origin: top left; width: 375px; height: 812px; }
+.screen-card-phone .page-header { display: none !important; }
+.screen-card-phone .event-meta  { display: none !important; }
+
+/* ── D3 Sankey overrides ── */
+.s-link { fill: none; opacity: .42; transition: opacity .18s; }
+.s-link:hover { opacity: .75; }
+.s-node rect { cursor: pointer; transition: opacity .15s; }
+.s-node rect:hover, .s-node.selected rect { filter: brightness(1.18); }
+.s-node text { pointer-events: none; font-family: 'DM Sans', sans-serif; }
+
+/* ── KPI + funnel cards ── */
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:24px; }
+.kpi { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; }
+.kpi .val { font-size:26px; font-weight:700; }
+.kpi .lbl { font-size:12px; color:var(--muted); margin-top:2px; }
+.kpi .sub2 { font-size:11px; color:var(--dim); margin-top:4px; }
+.kpi.green .val { color:#22c55e; } .kpi.red .val { color:#ef4444; }
+.kpi.orange .val { color:#f59e0b; } .kpi.blue .val { color:#3b82f6; }
+.kpi.purple .val { color:#a78bfa; }
+.funnels { display:flex; flex-direction:column; gap:20px; margin-bottom:24px; }
+.funnel-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:20px 20px 24px; }
+.funnel-card h3 { font-size:14px; font-weight:600; margin-bottom:16px; }
+.funnel-steps-row { display:flex; align-items:flex-start; overflow-x:auto; padding-bottom:8px; gap:0; }
+.funnel-step-wrap { display:flex; align-items:flex-start; gap:0; flex-shrink:0; }
+.funnel-step { display:flex; flex-direction:column; align-items:center; width:148px; flex-shrink:0; }
+.funnel-step-meta { width:100%; background:var(--card2); border-radius:8px; padding:10px 8px 8px; margin-bottom:10px; }
+.funnel-step-name { font-size:10px; font-weight:600; color:var(--text); line-height:1.3; margin-bottom:5px; text-align:center; min-height:28px; display:flex; align-items:center; justify-content:center; }
+.funnel-step-n { font-size:22px; font-weight:700; text-align:center; line-height:1; margin-bottom:2px; }
+.funnel-step-pct { font-size:10px; color:var(--muted); text-align:center; margin-bottom:6px; }
+.funnel-step-bar { width:100%; height:4px; background:var(--border); border-radius:2px; }
+.funnel-step-bar-fill { height:4px; border-radius:2px; }
+.funnel-step-phone { width:135px; height:292px; overflow:hidden; border-radius:14px; box-shadow:0 4px 20px rgba(0,0,0,.4); flex-shrink:0; }
+.funnel-step-phone > div { transform:scale(0.36); transform-origin:top left; width:375px; height:812px; }
+.funnel-step-phone .page-header { display:none !important; }
+.funnel-step-phone .event-meta { display:none !important; }
+.funnel-step-empty { width:135px; height:292px; border-radius:14px; border:1px dashed var(--border); display:flex; align-items:center; justify-content:center; }
+.funnel-step-empty span { font-size:9px; color:var(--dim); }
+.funnel-connector { display:flex; flex-direction:column; align-items:center; padding-top:22px; width:40px; flex-shrink:0; gap:2px; }
+.funnel-connector-pct { font-size:9px; font-weight:600; color:var(--muted); white-space:nowrap; }
+.funnel-connector-arrow { font-size:14px; color:var(--dim); line-height:1; }
+.paths-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:20px; margin-bottom:24px; }
+.paths-card h2 { font-size:15px; font-weight:600; margin-bottom:14px; }
+.path-row { padding:10px 12px; border-radius:6px; margin-bottom:6px; border:1px solid var(--border);
+  font-size:12px; background:var(--card2); line-height:1.6; }
+.path-row .pc { font-size:13px; font-weight:700; float:right; margin-left:12px; }
+.source { font-size:11px; color:var(--dim); text-align:center; margin-top:8px; padding-top:16px; border-top:1px solid var(--border); }
+
+/* ── Date range bar ── */
+.dr-bar { max-width:1400px; margin:0 auto 16px; display:flex; align-items:center;
+  gap:16px; flex-wrap:wrap; background:var(--card); border:1px solid var(--border);
+  border-radius:10px; padding:10px 16px; }
+.dr-loaded { display:flex; align-items:center; gap:8px; flex:1; min-width:200px; }
+.dr-dot { width:7px; height:7px; border-radius:50%; background:#22c55e; flex-shrink:0; }
+.dr-label { font-size:12px; color:var(--muted); }
+.dr-label strong { color:var(--text); }
+.dr-count { font-size:11px; color:var(--dim); background:var(--card2); padding:2px 8px;
+  border-radius:10px; white-space:nowrap; }
+.dr-presets { display:flex; gap:4px; }
+.dr-btn { padding:4px 12px; font-size:12px; font-weight:600; border-radius:6px;
+  border:1px solid var(--border); background:var(--card2); color:var(--muted);
+  cursor:pointer; transition:all .15s; }
+.dr-btn:hover { color:var(--text); border-color:var(--accent); }
+.dr-btn.active { background:var(--accent-dim); border-color:var(--accent); color:var(--accent); }
+.dr-stale { font-size:11px; color:var(--orange); display:none; }
+.dr-refresh { display:flex; align-items:center; gap:8px; margin-left:auto; }
+.dr-next { font-size:11px; color:var(--dim); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>ZA Affordability Flow</h1>
+  <div class="sub">South Africa · May 22 – Jun 3, 2026 · 56 unique users · Activity view</div>
+  <div class="badges">
+    <span class="badge za">🇿🇦 South Africa</span>
+    <span class="badge">56 Users</span>
+    <span class="badge warn">⚠ Soft Launch</span>
+    <span class="badge">Source: S3 CleverTap Export</span>
+  </div>
+</div>
+
+<!-- Date range bar -->
+<div class="dr-bar" id="dr-bar">
+  <div class="dr-loaded">
+    <span class="dr-dot"></span>
+    <span class="dr-label">Loaded: <strong id="dr-range-label">May 22 – Jun 3, 2026</strong></span>
+    <span class="dr-count" id="dr-user-count">55 users · Activity view</span>
+  </div>
+  <div class="dr-presets">
+    <button class="dr-btn" id="drp-7" onclick="selectPreset('7d')">7d</button>
+    <button class="dr-btn active" id="drp-14" onclick="selectPreset('14d')">14d</button>
+    <button class="dr-btn" id="drp-30" onclick="selectPreset('30d')">30d</button>
+  </div>
+  <span class="dr-stale" id="dr-stale">⚠ Range changed — data updates automatically at 9:00 AM</span>
+  <div class="dr-refresh">
+    <span class="dr-next" id="dr-next-refresh">⏰ Daily refresh: 9:00 AM</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('overview',this)">Overview</button>
+  <button class="tab" onclick="showTab('sankey',this)">Flow Diagram</button>
+  <button class="tab" onclick="showTab('funnels',this)">Funnels</button>
+  <button class="tab" onclick="showTab('paths',this)">Top Paths</button>
+  <button class="tab" onclick="showTab('screens',this)">App Screens</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="tab-overview" class="section active">
+  <div class="kpi-row">
+    <div class="kpi blue"><div class="val">55</div><div class="lbl">Intro View</div><div class="sub2">100% entry</div></div>
+    <div class="kpi purple"><div class="val">51</div><div class="lbl">Select Bank Connect</div><div class="sub2">92.7% — all bounce back</div></div>
+    <div class="kpi blue"><div class="val">50</div><div class="lbl">Select Upload Statement</div><div class="sub2">90.9% of starters</div></div>
+    <div class="kpi orange"><div class="val">35</div><div class="lbl">Reached Verification</div><div class="sub2">63.6% of starters</div></div>
+    <div class="kpi red"><div class="val">18</div><div class="lbl">Not Eligible</div><div class="sub2">fraud biz rules</div></div>
+    <div class="kpi green"><div class="val">3</div><div class="lbl">Eligible View</div><div class="sub2">5.5% E2E</div></div>
+  </div>
+  <div class="source">Activity view · ZA only · Consecutive duplicate events removed</div>
+</div>
+
+<!-- FLOW DIAGRAM — progressive disclosure step-flow -->
+<div id="tab-sankey" class="section">
+  <p class="flow-hint">Click an event card to expand it — see the app screen and reveal downstream steps.</p>
+  <div class="step-flow-wrap">
+    <div id="steps-row"></div>
+  </div>
+  <div class="source">Progressive disclosure · ZA affordability flow · May 22 – Jun 3, 2026 · 55 users</div>
+</div>
+
+<!-- FUNNELS -->
+<div id="tab-funnels" class="section">
+  <div class="funnels">
+    <div class="funnel-card">
+      <h3>Funnel A — Bank Connect Path</h3>
+      <div id="funnel-a"></div>
+    </div>
+    <div class="funnel-card">
+      <h3>Funnel B — Upload Statement Path</h3>
+      <div id="funnel-b"></div>
+    </div>
+  </div>
+  <div class="source">Sequential cohort view.</div>
+</div>
+
+<!-- PATHS -->
+<div id="tab-paths" class="section">
+  <div class="paths-card">
+    <h2>Top 10 Complete User Paths</h2>
+    <div id="top-paths-list"></div>
+  </div>
+  <div class="source">Each path = full deduplicated event sequence per user, truncated at 15 steps.</div>
+</div>
+
+<!-- SCREENS -->
+<div id="tab-screens" class="section">
+  <div class="screens-gallery" id="screens-gallery"></div>
+  <div class="source">App screens for each event node in the flow. Scale: 52% of real device size. Tap a node in Flow Diagram to isolate a single screen.</div>
+</div>
+
+<script>
+/* ============================================================
+   FidoApp DS2025 — Primitive factories (HTML string builders)
+   Each function maps one Composable to its CSS-driven HTML.
+   Convention: all factories return a string. Compose them.
+
+   To render a real screen:
+     1. Use screen({statusBar, appBar, content, bottomBar, …})
+        to assemble the phone frame.
+     2. Inside content, compose the primitives via the helpers
+        below. They mirror the @Composable signatures in
+        shared-ui/.../widgets/designSystem2025/.
+   ============================================================ */
+
+const DS = (() => {
+
+  /* ─── Utilities ───────────────────────────────────────── */
+  const esc = (s) => String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+  const cls = (...xs) => xs.filter(Boolean).join(' ');
+  const attr = (k, v) => v == null || v === false ? '' : ` ${k}="${esc(v)}"`;
+
+  /* ─── Icon (inline SVG from DS.icons map; falls back) ─── */
+  function icon(name, opts = {}) {
+    const icons = (typeof DS !== 'undefined' && DS.icons) || {};
+    const svg = icons[name] || icons.fallback || '';
+    const c = cls('ds-icon', opts.class);
+    const style = opts.color ? ` style="color:${opts.color}"` : '';
+    return `<span class="${c}"${style} data-icon="${esc(name)}">${svg}</span>`;
+  }
+
+  /* ─── Button (BaseButton + every wrapper) ─────────────── */
+  // opts: { text, style, size, type, icon, iconRight, loader, disabled,
+  //        action, id, chevron }
+  function btn(opts = {}) {
+    const style = opts.style || 'primary';
+    const size  = opts.size  || 'large';
+    const type  = opts.type  || (opts.icon || opts.iconRight ? 'icon' : 'text');
+    const isIconOnly = type === 'iconOnly';
+    const c = cls(
+      'ds-btn',
+      `ds-btn-${style}`,
+      `ds-btn-${size}`,
+      isIconOnly && 'icon-only',
+      opts.disabled && 'disabled',
+      opts.extraClass,
+    );
+    const id = opts.id ? ` id="${esc(opts.id)}"` : '';
+    const dataAction = opts.action ? ` data-action="${esc(opts.action)}"` : '';
+    const left  = opts.icon      ? icon(opts.icon)      : '';
+    const right = opts.iconRight ? icon(opts.iconRight) : '';
+    const loader = opts.loader ? `<span class="ds-loader white size-20"></span>` : '';
+    const arrow = opts.chevron ? `<span class="chevron"></span>` : '';
+    const body = isIconOnly
+      ? icon(opts.icon || opts.iconOnly || 'arrow_right')
+      : `${left}${loader && !right ? loader : ''}<span>${esc(opts.text || '')}</span>${right || arrow}${loader && right ? loader : ''}`;
+    return `<button class="${c}"${id}${dataAction}${opts.disabled ? ' disabled' : ''}>${body}</button>`;
+  }
+
+  /* ─── TinyButton ─────────────────────────────────────── */
+  // opts: { icon, style, tiny2026, id, action }
+  function tinyBtn(opts = {}) {
+    const c = cls('ds-tinyBtn', `ds-tinyBtn-${opts.style || 'gray'}`, opts.tiny2026 && 'tiny2026');
+    const id = opts.id ? ` id="${esc(opts.id)}"` : '';
+    const dataAction = opts.action ? ` data-action="${esc(opts.action)}"` : '';
+    return `<button class="${c}"${id}${dataAction}>${icon(opts.icon || 'close')}</button>`;
+  }
+
+  /* ─── Label / Badge ──────────────────────────────────── */
+  // opts: { text, variant, size, iconLeft, iconRight }
+  function label(opts = {}) {
+    const c = cls('ds-label', `ds-label-${opts.variant || 'neutral'}`, `ds-label-${opts.size || 'big'}`);
+    const left  = opts.iconLeft  ? icon(opts.iconLeft)  : '';
+    const right = opts.iconRight ? icon(opts.iconRight) : '';
+    return `<span class="${c}">${left}<span>${esc(opts.text)}</span>${right}</span>`;
+  }
+
+  /* ─── Card ───────────────────────────────────────────── */
+  function card(opts = {}, contentHTML = '') {
+    const c = cls('ds-card', `shadow-${opts.shadow || 'medium'}`, opts.error && 'has-error', opts.extraClass);
+    return `<div class="${c}">${contentHTML}</div>`;
+  }
+
+  /* ─── Notice ─────────────────────────────────────────── */
+  // opts: { variant, size, title, text, bullets, link, iconName, button }
+  function notice(opts = {}) {
+    const variant = opts.variant || 'neutral';
+    const size = opts.size || 'large';
+    const c = cls('ds-notice', `ds-notice-${variant}`, `size-${size}`);
+    let body = `<div class="notice-title">${esc(opts.title || '')}</div>`;
+    if (opts.text) body += `<div class="notice-text">${esc(opts.text)}</div>`;
+    if (opts.bullets && opts.bullets.length) {
+      body += `<ul class="notice-bullets">${opts.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>`;
+    }
+    if (opts.link) body += `<div class="ds-textLinks">${opts.link.before ? esc(opts.link.before) + ' ' : ''}<a>${esc(opts.link.text)}</a></div>`;
+    if (opts.button) {
+      body += btn({ text: opts.button.text, style: 'text', size: size === 'large' ? 'large' : 'small', iconRight: 'arrow_right', extraClass: 'notice-action' });
+    }
+    return `<div class="${c}">${icon(opts.iconName || 'info_outline')}<div class="notice-body">${body}</div></div>`;
+  }
+
+  /* ─── Sticky Banner ──────────────────────────────────── */
+  function stickyBanner(opts = {}) {
+    const c = cls('ds-stickyBanner', opts.center && 'center');
+    return `<div class="${c}">
+      <div class="banner-icon">${icon(opts.icon)}</div>
+      <div class="banner-body">
+        <div class="banner-title">${esc(opts.title)}</div>
+        ${opts.description ? `<div class="banner-desc">${esc(opts.description)}</div>` : ''}
+      </div>
+    </div>`;
+  }
+
+  /* ─── Popup (rendered inside .phone-frame via backdrop) ── */
+  function popup(opts = {}) {
+    const isSmall = opts.size === 'small';
+    return `<div class="ds-popup-backdrop">
+      <div class="ds-popup${isSmall ? ' small' : ''}">
+        ${opts.showClose !== false ? `<button class="ds-popup-close">${icon('close')}</button>` : ''}
+        ${opts.image ? `<div class="ds-popup-asset"><img src="${esc(opts.image)}" alt=""/></div>` : ''}
+        ${opts.title ? `<div class="ds-popup-title ${isSmall ? 't-titleBold1' : 't-hBold3'}">${esc(opts.title)}</div>` : ''}
+        ${opts.description ? `<div class="ds-popup-desc ${isSmall ? 't-body2' : 't-body1'}">${esc(opts.description)}</div>` : ''}
+        ${opts.button ? btn({ text: opts.button.text, style: 'primary', size: 'large', id: 'popup-cta' }) : ''}
+      </div>
+    </div>`;
+  }
+
+  /* ─── Snackbar / Toast ───────────────────────────────── */
+  function snackbar(opts = {}) {
+    const style = opts.style || 'default';
+    const position = opts.position || 'bottom';
+    let cta = '';
+    if (opts.cta) {
+      if (opts.cta.type === 'iconOnly') cta = `<button class="snack-cta">${icon(opts.cta.icon)}</button>`;
+      else cta = `<button class="snack-cta">${esc(opts.cta.text)}</button>`;
+    }
+    return `<div class="ds-snackbar-host ${position}">
+      <div class="ds-snackbar ds-snackbar-${style}">
+        ${opts.icon ? icon(opts.icon) : ''}
+        <span class="snack-text">${esc(opts.text)}</span>
+        ${cta}
+      </div>
+    </div>`;
+  }
+
+  /* ─── Radio Button ───────────────────────────────────── */
+  // opts: { title, subtitle, selected, error, disabled, indicator='end',
+  //        showCheckmark }
+  function radio(opts = {}) {
+    const c = cls('ds-radio-row', opts.indicator || 'end');
+    const ind = `<div class="${cls('ds-radio-indicator',
+      opts.selected && 'selected',
+      opts.error && 'error',
+      opts.disabled && 'disabled',
+      opts.showCheckmark && 'checkmark',
+    )}"></div>`;
+    const labelCol = `<div class="label-col">
+      ${opts.subtitle
+        ? `<div class="title">${esc(opts.title)}</div><div class="subtitle">${esc(opts.subtitle)}</div>`
+        : `<div class="single-line">${esc(opts.title)}</div>`}
+    </div>`;
+    return `<div class="${c}">
+      ${opts.indicator === 'start' ? ind : ''}
+      ${labelCol}
+      ${opts.indicator !== 'start' ? ind : ''}
+    </div>`;
+  }
+
+  /* ─── Numbered List Item ─────────────────────────────── */
+  function numberedItem(opts = {}) {
+    return `<div class="ds-numberedItem">
+      <span class="circle">${opts.number}</span>
+      <span class="text">${esc(opts.text)}</span>
+    </div>`;
+  }
+
+  /* ─── Stepper ────────────────────────────────────────── */
+  // step: { number, type='active'|'inactive'|'inProgress'|'done'|'failed',
+  //        title, subtitle, info, infoIcon, badge, last }
+  function step(s = {}) {
+    const type = s.type || 'inactive';
+    const c = cls('ds-step', type, s.last && 'last');
+    const dividerHTML = s.last ? '' : `<div class="ds-step-divider"></div>`;
+    let badgeHTML = '';
+    if (s.badge) badgeHTML = label({ text: s.badge.text, variant: s.badge.variant || 'neutral', iconLeft: s.badge.icon });
+    else if (type === 'done')      badgeHTML = label({ text: s.doneText || 'Done', variant: 'positive', iconLeft: 'check_circle' });
+    else if (type === 'inProgress') badgeHTML = label({ text: 'In progress', variant: 'neutral', iconLeft: 'clock' });
+    else if (type === 'failed')    badgeHTML = label({ text: 'Failed', variant: 'warning' });
+    return `<div class="${c}">
+      <div class="ds-step-rail">
+        <div class="ds-step-circle">${type === 'done' ? icon('check') : s.number}</div>
+        ${dividerHTML}
+      </div>
+      <div class="ds-step-body">
+        <div class="ds-step-title-row">
+          <span class="ds-step-title">${esc(s.title)}</span>
+          ${s.titleTrailing || ''}
+        </div>
+        ${s.subtitle ? `<div class="ds-step-subtitle">${esc(s.subtitle)}</div>` : ''}
+        ${s.info ? `<div class="ds-step-info">${s.infoIcon ? icon(s.infoIcon) : ''}<span>${esc(s.info)}</span></div>` : ''}
+        ${badgeHTML}
+      </div>
+    </div>`;
+  }
+
+  function stepper(steps = []) {
+    const list = steps.map((s, i) => step({ ...s, last: i === steps.length - 1 }));
+    return `<div class="ds-stepper">${list.join('')}</div>`;
+  }
+
+  /* ─── Progress Stepper ───────────────────────────────── */
+  // opts: { sections, activeIndex, activeQ, qInSection }
+  function progressStepper(opts = {}) {
+    const n = opts.sections;
+    const active = opts.activeIndex;
+    const ratio = (opts.activeQ + 1) / (opts.qInSection + 1);
+    const segs = [];
+    for (let i = 0; i < n; i++) {
+      if (i < active) segs.push(`<div class="seg filled"></div>`);
+      else if (i === active) segs.push(`<div class="seg partial" style="--fill:${Math.round(ratio * 100)}%"></div>`);
+      else segs.push(`<div class="seg"></div>`);
+    }
+    return `<div class="ds-progressStepper">${segs.join('')}</div>`;
+  }
+
+  /* ─── Card List Selector ─────────────────────────────── */
+  // opts: { text, trailing, strikeTrailing, discount, state='default'|'selected'|'error'|'disabled', withRadio }
+  function listCard(opts = {}) {
+    const state = opts.state || 'default';
+    const c = cls('ds-listCard', state !== 'default' && state);
+    const ind = opts.withRadio
+      ? `<div class="${cls('ds-radio-indicator', state === 'selected' && 'selected')}"></div>`
+      : '';
+    const trailing = (opts.trailing || opts.discount)
+      ? `<div class="trailing">
+          ${opts.trailing ? `<span class="${opts.strikeTrailing ? 'strike' : ''}">${esc(opts.trailing)}</span>` : ''}
+          ${opts.discount ? `<span class="discount-chip">${esc(opts.discount)}</span>` : ''}
+        </div>`
+      : '';
+    return `<div class="${c}">
+      <div class="inner">${ind}<span class="text">${esc(opts.text)}</span></div>
+      ${trailing}
+    </div>`;
+  }
+
+  /* ─── Document Status Card ───────────────────────────── */
+  // opts: { documentName, status='default'|'underReview'|'reviewed'|'approved'|'declined',
+  //        description, rejectionReason, submissionDate, displayMode='full'|'simple' }
+  function docStatusCard(opts = {}) {
+    const status = opts.status || 'default';
+    const mode = opts.displayMode || 'full';
+    const showStatus = mode === 'full' && status !== 'default';
+    const showArrow = (status === 'default' || status === 'reviewed' || status === 'declined' || mode === 'simple');
+
+    const statusLabels = {
+      underReview: { text: 'Under review', variant: 'neutral' },
+      reviewed:    { text: 'Reviewed',     variant: 'dark' },
+      approved:    { text: 'Approved',     variant: 'positive', icon: 'check_circle' },
+      declined:    { text: 'Declined',     variant: 'negativeDark', icon: 'exit_circle' },
+    };
+    const sl = statusLabels[status];
+
+    const inner = `
+      ${showStatus && sl ? `<div class="status-row">
+        ${label({ text: sl.text, variant: sl.variant, iconLeft: sl.icon })}
+        ${opts.submissionDate ? `<span class="date">${esc(opts.submissionDate)}</span>` : ''}
+      </div>` : ''}
+      <div class="title-row">
+        ${icon(opts.iconId || 'doc', { class: 'doc-icon' })}
+        <span class="doc-title">${esc(opts.documentName)}</span>
+        ${showArrow ? `<button class="ds-btn ds-btn-text ds-btn-large icon-only cta">${icon('arrow_right')}</button>` : ''}
+      </div>
+      ${mode === 'full' && opts.description ? `<div class="description">${esc(opts.description)}</div>` : ''}
+      ${mode === 'full' && opts.rejectionReason ? `<div class="rejection-row">${icon('info_outline')}<span>${esc(opts.rejectionReason)}</span></div>` : ''}
+    `;
+    return card({ shadow: 'small', error: status === 'declined', extraClass: cls('ds-docStatusCard', status) }, inner);
+  }
+
+  /* ─── Upload Document Card ───────────────────────────── */
+  function uploadCard(opts = {}) {
+    const inner = `
+      <div class="asset">${opts.asset || icon('doc')}</div>
+      <div class="body">
+        <div class="title">${esc(opts.title)}</div>
+        ${opts.description ? `<div class="desc">${esc(opts.description)}</div>` : ''}
+        ${opts.label ? label(opts.label) : ''}
+      </div>
+      <div class="upload-btn">${btn({ icon: opts.uploadIcon || 'upload', style: 'primary', size: 'small', type: 'iconOnly' })}</div>
+    `;
+    return card({ shadow: 'small', error: !!opts.error, extraClass: 'ds-uploadCard' }, inner);
+  }
+
+  /* ─── Text with Links ────────────────────────────────── */
+  // opts: { fullText, links: [{text, url}] }
+  function textLinks(opts = {}) {
+    let html = esc(opts.fullText || '');
+    (opts.links || []).forEach(l => {
+      html = html.replace(esc(l.text), `<a>${esc(l.text)}</a>`);
+    });
+    return `<p class="ds-textLinks">${html}</p>`;
+  }
+
+  /* ─── Loader ─────────────────────────────────────────── */
+  function loader(opts = {}) {
+    return `<span class="${cls('ds-loader', opts.color || 'pink', opts.size && `size-${opts.size}`)}"></span>`;
+  }
+
+  /* ─── Bottom Sheet ───────────────────────────────────── */
+  function bottomSheet(opts = {}, contentHTML = '') {
+    return `<div class="ds-bottomSheet">
+      ${opts.dragHandle !== false ? `<div class="drag-handle"></div>` : ''}
+      ${opts.title || opts.onClose || opts.onBack ? `<div class="sheet-header">
+        ${opts.onBack ? tinyBtn({ icon: 'arrow_left', style: 'gray' }) : '<span></span>'}
+        <span class="sheet-title t-titleBold3">${esc(opts.title || '')}</span>
+        ${opts.onClose !== false ? tinyBtn({ icon: 'close', style: 'gray' }) : '<span></span>'}
+      </div>` : ''}
+      ${contentHTML}
+    </div>`;
+  }
+
+  /* ─── Top Bar Curved Bottom ──────────────────────────── */
+  function topBarCurved(opts = {}, contentHTML = '') {
+    return `<div class="ds-topBarCurved" style="${opts.gradient ? `background:${opts.gradient}` : ''}">
+      <div class="nav-row">
+        ${tinyBtn({ icon: 'arrow_left', style: 'white' })}
+        ${tinyBtn({ icon: 'help',       style: 'white' })}
+      </div>
+      ${contentHTML}
+    </div>`;
+  }
+
+  /* ─── App bar / Header ───────────────────────────────── */
+  // opts: { title, leftIcon='back'|null, rightIcon=null, rightText, dark, onBack, onClose }
+  function appBar(opts = {}) {
+    const left = opts.leftIcon === 'back'
+      ? tinyBtn({ icon: 'arrow_left', style: opts.dark ? 'white' : 'gray' })
+      : opts.leftIcon
+        ? tinyBtn({ icon: opts.leftIcon, style: 'gray' })
+        : '<span class="app-bar-slot"></span>';
+    const right = opts.rightText
+      ? `<button class="app-bar-action">${esc(opts.rightText)}</button>`
+      : opts.rightIcon
+        ? tinyBtn({ icon: opts.rightIcon, style: 'gray' })
+        : '<span class="app-bar-slot"></span>';
+    return `<div class="app-bar">
+      <div class="app-bar-slot">${left}</div>
+      <div class="app-bar-title">${esc(opts.title || '')}</div>
+      <div class="app-bar-slot">${right}</div>
+    </div>`;
+  }
+
+  /* ─── Status bar (fake iOS) ─────────────────────────── */
+  function statusBar(opts = {}) {
+    return `<div class="status-bar">
+      <span>${esc(opts.time || '9:41')}</span>
+      <span class="status-bar-right">
+        <span style="font-size:12px">●●●</span>
+        <span style="font-size:12px;font-weight:700">5G</span>
+        <span style="display:inline-block;width:24px;height:12px;border:1px solid currentColor;border-radius:3px;position:relative">
+          <span style="position:absolute;inset:1px;background:currentColor;border-radius:1px"></span>
+        </span>
+      </span>
+    </div>`;
+  }
+
+  /* ─── Bottom button box ──────────────────────────────── */
+  // opts: { arrangement='vertical'|'horizontal', topNote, bottomNote }
+  // buttons: array of HTML strings (call btn() yourself)
+  function bottomBox(opts = {}, buttons = []) {
+    const horiz = opts.arrangement === 'horizontal';
+    const c = cls('bottom-bar', horiz && 'ds-bottomBox-horizontal');
+    return `<div class="${c}">
+      ${opts.topNote ? `<div class="ds-bottomBox-note">${esc(opts.topNote)}</div>` : ''}
+      ${buttons.join('')}
+      ${opts.bottomNote ? `<div class="ds-bottomBox-note">${esc(opts.bottomNote)}</div>` : ''}
+    </div>`;
+  }
+
+  /* ─── Text Field (approximate WalletTextField) ───────── */
+  function textField(opts = {}) {
+    const c = cls('ds-textField');
+    const inputCls = cls('input', opts.focused && 'focused', opts.error && 'error', opts.disabled && 'disabled');
+    const inner = opts.value
+      ? `<span>${esc(opts.value)}</span>`
+      : `<input placeholder="${esc(opts.placeholder || '')}" />`;
+    return `<div class="${c}">
+      ${opts.label ? `<label>${esc(opts.label)}</label>` : ''}
+      <div class="${inputCls}">
+        ${opts.iconLeft ? icon(opts.iconLeft) : ''}
+        ${inner}
+        ${opts.iconRight ? icon(opts.iconRight) : ''}
+      </div>
+      ${opts.helper ? `<span class="${cls('helper', opts.error && 'error')}">${esc(opts.helper)}</span>` : ''}
+    </div>`;
+  }
+
+  /* ─── Screen assembler ───────────────────────────────── */
+  // opts: { statusBar=true, appBar, content, bottomBar, dark, bottomSheet,
+  //        popup, snackbar, bgLayer }
+  function screen(opts = {}) {
+    const dark = opts.dark ? ' dark' : '';
+    return `<div class="phone-frame${dark}">
+      ${opts.bgLayer ? `<div class="bg-layer">${opts.bgLayer}</div>` : ''}
+      ${opts.statusBar !== false ? statusBar() : ''}
+      ${opts.appBar || ''}
+      <div class="screen-content${opts.noHorizPadding ? ' no-horiz-padding' : ''}">${opts.content || ''}</div>
+      ${opts.bottomBar || ''}
+      ${opts.bottomSheet || ''}
+      ${opts.popup || ''}
+      ${opts.snackbar || ''}
+    </div>`;
+  }
+
+  /* ─── Pattern helpers — recurring across many screens ── */
+
+  /* OTP cells: 6 digit boxes with active/filled state */
+  // opts: { digits=['', '', ...], delimiter='-', delimAt=3, active=null, error=false }
+  function otpCells(opts = {}) {
+    const digits = opts.digits || ['','','','','',''];
+    const delimAt = opts.delimAt == null ? Math.floor(digits.length / 2) : opts.delimAt;
+    const active = opts.active;
+    const parts = digits.map((d, i) => {
+      const c = cls(
+        'ds-otpCell',
+        d && 'filled',
+        !d && i === active && 'active',
+        opts.error && 'error',
+      );
+      return `<div class="${c}">${esc(d || '')}</div>`;
+    });
+    if (opts.delimiter && delimAt > 0 && delimAt < digits.length) {
+      parts.splice(delimAt, 0, `<span class="ds-otpDash">${esc(opts.delimiter)}</span>`);
+    }
+    return `<div class="ds-otpRow">${parts.join('')}</div>`;
+  }
+
+  /* PIN dots: underline-style PIN indicator */
+  // opts: { length=4, filled=0 }
+  function pinDots(opts = {}) {
+    const length = opts.length || 4;
+    const filled = opts.filled || 0;
+    const dots = Array.from({ length }, (_, i) =>
+      `<div class="ds-pinDot ${i < filled ? 'filled' : ''}"></div>`,
+    ).join('');
+    return `<div class="ds-pinDots">${dots}</div>`;
+  }
+
+  /* Phone input row: country picker pill + phone number field */
+  // opts: { dialCode='+233', flag='🇬🇭', value=null, placeholder='', focused=false, disabledPicker=false }
+  function phoneInputRow(opts = {}) {
+    const value = opts.value;
+    const focused = opts.focused || !!value;
+    return `<div class="ds-phoneRow">
+      <div class="ds-countryPill${opts.disabledPicker ? ' disabled' : ''}">
+        <span class="flag">${esc(opts.flag || '')}</span>
+        <span>${esc(opts.dialCode || '')}</span>
+        ${opts.disabledPicker ? '' : '<span class="caret">▾</span>'}
+      </div>
+      <div class="ds-phoneField${focused ? ' focused' : ''}">
+        ${value ? `<span>${esc(value)}</span>` : `<span class="placeholder">${esc(opts.placeholder || '')}</span>`}
+      </div>
+    </div>`;
+  }
+
+  /* Summary card: rounded card with optional final-step accent */
+  // opts: { final=false }, contentHTML
+  function summaryCard(opts = {}, contentHTML = '') {
+    return `<div class="ds-summaryCard${opts.final ? ' final' : ''}">${contentHTML}</div>`;
+  }
+  /* Helpers for rows inside summaryCard */
+  function summaryTopRow(label, value) {
+    return `<div class="ds-summaryRow top"><span class="lbl">${esc(label)}</span>${value ? `<span class="val">${esc(value)}</span>` : ''}</div>`;
+  }
+  function summaryRow(label, value) {
+    return `<div class="ds-summaryRow"><span class="lbl">${esc(label)}</span><span class="val">${esc(value)}</span></div>`;
+  }
+  function summaryCalcRow(label, value) {
+    return `<div class="ds-summaryRow calc"><span class="lbl">${esc(label)}</span><span class="val">${esc(value)}</span></div>`;
+  }
+
+  /* Hero banner: full-bleed top banner used by Welcome / KYC intro / etc */
+  // opts: { gradient='pink', logo='F', height=320, content?=customHTML }
+  function heroBanner(opts = {}) {
+    const grad = opts.gradient || 'pink';
+    const h = opts.height || 320;
+    return `<div class="ds-heroBanner grad-${grad}" style="height:${h}px">
+      ${opts.content || `<div class="ds-heroLogo">${esc(opts.logo || 'F')}</div>`}
+    </div>`;
+  }
+
+  /* Keyboard — iOS-style overlay anchored to phone bottom */
+  // opts: { layout='numeric'|'qwerty', accessory=null }
+  //   - layout: which key set to render
+  //   - accessory: HTML string to render ABOVE the keyboard (e.g., OTP autofill banner)
+  function keyboard(opts = {}) {
+    const layout = opts.layout || 'numeric';
+    const accessory = opts.accessory || '';
+
+    if (layout === 'numeric') {
+      const rows = [
+        [{ k: '1' }, { k: '2', sub: 'ABC' }, { k: '3', sub: 'DEF' }],
+        [{ k: '4', sub: 'GHI' }, { k: '5', sub: 'JKL' }, { k: '6', sub: 'MNO' }],
+        [{ k: '7', sub: 'PQRS' }, { k: '8', sub: 'TUV' }, { k: '9', sub: 'WXYZ' }],
+        [{ empty: true }, { k: '0' }, { backspace: true }],
+      ];
+      const renderKey = (k) => {
+        if (k.empty)     return `<div class="ds-kbd-key empty"></div>`;
+        if (k.backspace) return `<button class="ds-kbd-key backspace">⌫</button>`;
+        return `<button class="ds-kbd-key"><span class="num">${k.k}</span>${k.sub ? `<span class="sub">${k.sub}</span>` : ''}</button>`;
+      };
+      const html = rows.map(row =>
+        `<div class="ds-kbd-row">${row.map(renderKey).join('')}</div>`,
+      ).join('');
+      return `<div class="ds-keyboard-wrap layout-numeric">
+        ${accessory}
+        <div class="ds-keyboard ds-keyboard-numeric">${html}<div class="ds-kbd-home-indicator"></div></div>
+      </div>`;
+    }
+
+    // QWERTY (simplified — mockup fidelity, not a working keyboard)
+    const rows = [
+      ['q','w','e','r','t','y','u','i','o','p'],
+      ['a','s','d','f','g','h','j','k','l'],
+      ['z','x','c','v','b','n','m'],
+    ];
+    const letterRows = rows.map((row, i) => {
+      const keys = row.map(c => `<button class="ds-kbd-key letter">${c}</button>`).join('');
+      const shift  = i === 2 ? `<button class="ds-kbd-key util">⇧</button>` : '';
+      const bksp   = i === 2 ? `<button class="ds-kbd-key util">⌫</button>` : '';
+      const indentCls = i === 1 ? ' indented' : '';
+      return `<div class="ds-kbd-row${indentCls}">${shift}${keys}${bksp}</div>`;
+    }).join('');
+    const bottomRow = `<div class="ds-kbd-row bottom">
+      <button class="ds-kbd-key util numeric-toggle">123</button>
+      <button class="ds-kbd-key util emoji">🌐</button>
+      <button class="ds-kbd-key space">space</button>
+      <button class="ds-kbd-key util return">return</button>
+    </div>`;
+    return `<div class="ds-keyboard-wrap layout-qwerty">
+      ${accessory}
+      <div class="ds-keyboard ds-keyboard-qwerty">${letterRows}${bottomRow}<div class="ds-kbd-home-indicator"></div></div>
+    </div>`;
+  }
+
+  /* Image placeholders — fast by default; pixel-fidelity opt-in */
+  // opts: { src, ratio='16:9', label, inline=false }
+  function localImage(opts = {}) {
+    if (opts.inline && opts.src) {
+      // Caller has resolved + base64-encoded the data URI already.
+      return `<img class="ds-localImg" src="${esc(opts.src)}" alt="${esc(opts.label || '')}" style="width:100%; display:block">`;
+    }
+    return `<div class="ds-imgPlaceholder local" style="aspect-ratio:${esc(opts.ratio || '16/9')}">
+      <span class="badge">local</span>
+      <span class="name">${esc(opts.label || opts.src || 'illustration')}</span>
+    </div>`;
+  }
+
+  // opts: { label, ratio='16:9' }
+  function remoteImage(opts = {}) {
+    return `<div class="ds-imgPlaceholder remote" style="aspect-ratio:${esc(opts.ratio || '16/9')}">
+      <span class="badge">remote</span>
+      <span class="name">${esc(opts.label || 'Firebase / Remote Config asset')}</span>
+    </div>`;
+  }
+
+  /* ─── Page chrome (header above the phone) ───────────── */
+  function pageHeader(opts = {}) {
+    const chips = [];
+    if (opts.eventName) chips.push(`<span class="meta-chip">${esc(opts.eventName)}</span>`);
+    if (opts.eventDesc) chips.push(`<span class="meta-chip">${esc(opts.eventDesc)}</span>`);
+    if (opts.intent)    chips.push(`<span class="meta-chip ${opts.intent === 'Action' ? 'pink' : 'green'}">${esc(opts.intent)}</span>`);
+    if (opts.action)    chips.push(`<span class="meta-chip pink">${esc(opts.action)}</span>`);
+    if (opts.country)   chips.push(`<span class="meta-chip muted">${esc(opts.countryFlag || '')} ${esc(opts.country)}</span>`);
+    if (opts.screenId)  chips.push(`<span class="meta-chip muted">${esc(opts.screenId)}</span>`);
+    return `<div class="page-header">
+      <h1>${esc(opts.title || '')}</h1>
+      ${opts.subtitle ? `<p>${opts.subtitle}</p>` : ''}
+    </div>
+    <div class="event-meta">${chips.join('')}</div>`;
+  }
+
+  function legend(opts = {}) {
+    const actions = opts.actions || [];
+    const highlight = opts.highlightAction;
+    return `<div class="legend">
+      <h3>Screen Information</h3>
+      <h4>Mode</h4>
+      <div class="legend-grid">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--c-success200)"></div><span><strong>View</strong> — passive render, no element highlighted</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--c-primary500)"></div><span><strong>Action</strong> — user tapped a button (pulse)</span></div>
+      </div>
+      ${actions.length ? `<h4>Available Actions</h4>
+      <div class="legend-grid">
+        ${actions.map(a => `<div class="legend-item">
+          <div class="legend-dot" style="background:${a === highlight ? 'var(--c-primary500)' : '#475569'}"></div>
+          <span>${a === highlight ? `<strong>${esc(a)} (active)</strong>` : esc(a)}</span>
+        </div>`).join('')}
+      </div>` : ''}
+      ${opts.sourceFile ? `<h4>Source</h4><code style="font-size:12px;color:#94A3B8">${esc(opts.sourceFile)}</code>` : ''}
+    </div>`;
+  }
+
+  /* ─── Apply action highlight (post-render) ───────────── */
+  function applyHighlight(action) {
+    if (!action) return;
+    const el = document.querySelector(`[data-action="${action}"]`);
+    if (el) {
+      el.classList.add('action-highlight');
+      el.setAttribute('data-action-label', action);
+    }
+  }
+
+  return {
+    icon, btn, tinyBtn, label, card, notice, stickyBanner,
+    popup, snackbar, radio, numberedItem, step, stepper,
+    progressStepper, listCard, docStatusCard, uploadCard,
+    textLinks, loader, bottomSheet, topBarCurved, appBar,
+    statusBar, bottomBox, textField, screen, pageHeader,
+    legend, applyHighlight,
+    // Recurring pattern helpers
+    otpCells, pinDots, phoneInputRow,
+    summaryCard, summaryTopRow, summaryRow, summaryCalcRow,
+    heroBanner, localImage, remoteImage, keyboard,
+    icons: {},  // populated by icons.js
+    esc, cls,
+  };
+})();
+
+</script>
+<script>
+/* ============================================================
+   FidoApp DS2025 — Icon library (inline SVG)
+   Curated subset of the most-referenced ds_ic_* icons.
+   All icons share the same canvas (24x24 viewBox) and use
+   `stroke="currentColor"` so they inherit the parent color.
+
+   To add an icon: drop another `name: '<svg>...'` entry.
+   Names mirror common ds_ic_<name> stems (without prefix).
+   ============================================================ */
+
+(function (DS) {
+  if (!DS) return;
+  const SVG = (paths, attrs = '') =>
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" ${attrs}>${paths}</svg>`;
+  const FILLED = (paths, attrs = '') =>
+    `<svg viewBox="0 0 24 24" fill="currentColor" ${attrs}>${paths}</svg>`;
+
+  DS.icons = {
+    /* ── Navigation ─────────────────────────────────── */
+    arrow_left:        SVG(`<path d="M14 6 L8 12 L14 18"/>`),
+    arrow_right:       SVG(`<path d="M10 6 L16 12 L10 18"/>`),
+    arrow_up:          SVG(`<path d="M6 14 L12 8 L18 14"/>`),
+    arrow_down:        SVG(`<path d="M6 10 L12 16 L18 10"/>`),
+    arrow_line_right:  SVG(`<path d="M5 12 H19"/><path d="M14 7 L19 12 L14 17"/>`),
+    arrow_line_left:   SVG(`<path d="M19 12 H5"/><path d="M10 7 L5 12 L10 17"/>`),
+
+    /* ── Close / Dismiss ────────────────────────────── */
+    close:        SVG(`<path d="M6 6 L18 18"/><path d="M18 6 L6 18"/>`),
+    close_small:  SVG(`<path d="M7 7 L17 17"/><path d="M17 7 L7 17"/>`),
+    exit:         SVG(`<path d="M6 6 L18 18"/><path d="M18 6 L6 18"/>`),
+    exit_circle:  SVG(`<circle cx="12" cy="12" r="10"/><path d="M9 9 L15 15"/><path d="M15 9 L9 15"/>`),
+
+    /* ── Confirmation ──────────────────────────────── */
+    check:        SVG(`<path d="M5 13 L10 18 L19 7"/>`),
+    check_circle: SVG(`<circle cx="12" cy="12" r="10"/><path d="M7 12 L11 16 L17 9"/>`),
+    tick_circle:  SVG(`<circle cx="12" cy="12" r="10"/><path d="M7 12 L11 16 L17 9"/>`),
+
+    /* ── Status / Info ─────────────────────────────── */
+    info:         SVG(`<circle cx="12" cy="12" r="10"/><path d="M12 8 V12"/><path d="M12 16 H12.01"/>`),
+    info_outline: SVG(`<circle cx="12" cy="12" r="10"/><path d="M12 11 V17"/><path d="M12 7 H12.01"/>`),
+    warning:      SVG(`<path d="M12 3 L22 20 H2 Z"/><path d="M12 10 V14"/><path d="M12 18 H12.01"/>`),
+    notice:       SVG(`<circle cx="12" cy="12" r="10"/><path d="M12 7 V13"/><path d="M12 17 H12.01"/>`),
+    help:         SVG(`<circle cx="12" cy="12" r="10"/><path d="M9 9 a3 3 0 1 1 4 3 c-1 .8 -1 1.5 -1 3"/><path d="M12 18 H12.01"/>`),
+    in_progress:  SVG(`<circle cx="12" cy="12" r="10"/><path d="M12 6 V12 L16 14"/>`),
+    clock:        SVG(`<circle cx="12" cy="12" r="9"/><path d="M12 7 V12 L15 14"/>`),
+
+    /* ── Identity / Docs ───────────────────────────── */
+    id_card:      SVG(`<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="9" cy="12" r="2.5"/><path d="M5 17 c0 -2 2 -3 4 -3 s4 1 4 3"/><path d="M15 9 H19"/><path d="M15 12 H19"/><path d="M15 15 H17"/>`),
+    doc:          SVG(`<path d="M7 3 H15 L19 7 V21 H7 Z"/><path d="M15 3 V7 H19"/><path d="M10 12 H16"/><path d="M10 16 H16"/>`),
+    doc_normal_big: SVG(`<path d="M7 3 H15 L19 7 V21 H7 Z"/><path d="M15 3 V7 H19"/><path d="M10 12 H16"/><path d="M10 16 H16"/>`),
+    folder:       SVG(`<path d="M3 7 H9 L11 5 H21 V19 H3 Z"/>`),
+
+    /* ── Communication ─────────────────────────────── */
+    phone:        SVG(`<path d="M5 4 H8 L10 9 L8 11 c1 2 2 3 4 4 L14 13 L19 15 V18 c0 1 -1 2 -2 2 c-8 0 -14 -6 -14 -14 c0 -1 1 -2 2 -2"/>`),
+    mail:         SVG(`<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7 L12 13 L21 7"/>`),
+    chat:         SVG(`<path d="M3 5 H21 V17 H8 L4 21 V17 H3 Z"/>`),
+
+    /* ── Money / Finance ───────────────────────────── */
+    wallet:       SVG(`<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10 H21"/><circle cx="17" cy="14" r="1.5"/>`),
+    coin:         SVG(`<circle cx="12" cy="12" r="9"/><path d="M12 7 V17"/><path d="M9 10 H14 a2 2 0 0 1 0 4 H10 a2 2 0 0 0 0 4 H15"/>`),
+    bank:         SVG(`<path d="M3 10 L12 4 L21 10"/><path d="M5 10 V19"/><path d="M9 10 V19"/><path d="M15 10 V19"/><path d="M19 10 V19"/><path d="M3 21 H21"/>`),
+
+    /* ── Camera / Upload ───────────────────────────── */
+    camera:       SVG(`<path d="M3 7 H7 L9 5 H15 L17 7 H21 V19 H3 Z"/><circle cx="12" cy="13" r="3.5"/>`),
+    upload:       SVG(`<path d="M12 16 V4"/><path d="M7 9 L12 4 L17 9"/><path d="M4 20 H20"/>`),
+    download:     SVG(`<path d="M12 4 V16"/><path d="M7 11 L12 16 L17 11"/><path d="M4 20 H20"/>`),
+
+    /* ── User / Profile ────────────────────────────── */
+    user:         SVG(`<circle cx="12" cy="8" r="4"/><path d="M4 21 c0 -5 4 -8 8 -8 s8 3 8 8"/>`),
+    users:        SVG(`<circle cx="9" cy="8" r="3.5"/><path d="M3 20 c0 -4 3 -6 6 -6 s6 2 6 6"/><circle cx="17" cy="8" r="3"/><path d="M17 14 c2 0 4 1 5 4"/>`),
+    shield:       SVG(`<path d="M12 3 L20 6 V12 c0 4 -3 7 -8 9 c-5 -2 -8 -5 -8 -9 V6 Z"/>`),
+
+    /* ── Home / Nav ────────────────────────────────── */
+    home:         SVG(`<path d="M3 11 L12 4 L21 11"/><path d="M5 11 V20 H19 V11"/>`),
+    menu:         SVG(`<path d="M4 7 H20"/><path d="M4 12 H20"/><path d="M4 17 H20"/>`),
+    grid:         SVG(`<rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/>`),
+    bell:         SVG(`<path d="M6 16 V11 c0 -3 2.5 -5.5 6 -5.5 s6 2.5 6 5.5 V16 L20 18 H4 Z"/><path d="M10 21 c0 1 1 2 2 2 s2 -1 2 -2"/>`),
+
+    /* ── Misc actions ──────────────────────────────── */
+    search:       SVG(`<circle cx="11" cy="11" r="7"/><path d="M16 16 L21 21"/>`),
+    edit:         SVG(`<path d="M15 4 L20 9 L9 20 H4 V15 Z"/>`),
+    plus:         SVG(`<path d="M12 5 V19"/><path d="M5 12 H19"/>`),
+    minus:        SVG(`<path d="M5 12 H19"/>`),
+    copy:         SVG(`<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8 V5 a2 2 0 0 0 -2 -2 H5 a2 2 0 0 0 -2 2 V16 a2 2 0 0 0 2 2 H8"/>`),
+    share:        SVG(`<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8 11 L16 7"/><path d="M8 13 L16 17"/>`),
+    eye:          SVG(`<path d="M1 12 c3 -5 7 -8 11 -8 s8 3 11 8 c-3 5 -7 8 -11 8 s-8 -3 -11 -8 Z"/><circle cx="12" cy="12" r="3"/>`),
+    eye_off:      SVG(`<path d="M3 3 L21 21"/><path d="M10 5.5 c4 -0.5 9 2 12 6.5 c-1 1.5 -2.5 3 -4 4"/><path d="M14 14.5 c-3 1 -7 -0.5 -10 -2.5 c1.5 -2 3.5 -4 6 -5"/>`),
+    star:         SVG(`<path d="M12 3 L14.5 9 L21 10 L16 14.5 L17.5 21 L12 17.5 L6.5 21 L8 14.5 L3 10 L9.5 9 Z"/>`),
+    heart:        SVG(`<path d="M12 21 C7 17 3 13 3 8 a4 4 0 0 1 8 0 c1 -3 4 -4 6 -2 c3 3 0 8 -5 12 z"/>`),
+
+    /* ── Status — filled variants ──────────────────── */
+    check_circle_thick: FILLED(`<circle cx="12" cy="12" r="10" /><path d="M7 12 L11 16 L17 9" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`),
+    exit_circle_thick:  FILLED(`<circle cx="12" cy="12" r="10" /><path d="M9 9 L15 15" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"/><path d="M15 9 L9 15" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"/>`),
+
+    /* ── Generic fallback ──────────────────────────── */
+    fallback: SVG(`<circle cx="12" cy="12" r="9"/><path d="M12 8 V13"/><circle cx="12" cy="16" r="0.6" fill="currentColor"/>`),
+  };
+
+  /* Common aliases — many composables use stem variants */
+  const a = (alias, target) => { DS.icons[alias] = DS.icons[target]; };
+  a('nav_help', 'help');
+  a('nav_exit', 'close');
+  a('nav_arrow_line_left', 'arrow_line_left');
+  a('nav_help_clean_small', 'help');
+  a('arrow_right_small', 'arrow_right');
+  a('arrow_line_right_medium', 'arrow_line_right');
+  a('arrow_line_right_small', 'arrow_line_right');
+  a('back_button_circle', 'arrow_left');
+  a('close_button_circle', 'close');
+  a('id_card_extra_small', 'id_card');
+  a('upload1_small', 'upload');
+  a('clock_small', 'clock');
+  a('checkmark_green', 'check');
+  a('in_progress_small', 'in_progress');
+  a('info_outline_small', 'info_outline');
+  a('notice_big', 'notice');
+})(typeof DS !== 'undefined' ? DS : null);
+
+</script>
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────
+const SNODES = [{"id": 0, "label": "Intro View", "users": 55, "type": "view", "screen": "intro"}, {"id": 1, "label": "Method Selection View", "users": 55, "type": "view", "screen": "method_sel"}, {"id": 2, "label": "Select Bank Connect", "users": 51, "type": "warning", "screen": "method_sel"}, {"id": 3, "label": "BC \u2192 Switched to Upload", "users": 46, "type": "action", "screen": null}, {"id": 4, "label": "Drop-off (BC)", "users": 5, "type": "dropoff", "screen": null}, {"id": 5, "label": "Doc Upload Intro View", "users": 50, "type": "view", "screen": "doc_upload"}, {"id": 6, "label": "Click Continue", "users": 49, "type": "action", "screen": null}, {"id": 7, "label": "File Type Selection", "users": 49, "type": "view", "screen": "file_type"}, {"id": 8, "label": "Click Upload Files", "users": 47, "type": "action", "screen": null}, {"id": 9, "label": "Uploading In Progress", "users": 47, "type": "view", "screen": "uploading"}, {"id": 10, "label": "Verification In Progress", "users": 35, "type": "view", "screen": "verif"}, {"id": 11, "label": "Drop-off (Upload)", "users": 12, "type": "dropoff", "screen": null}, {"id": 12, "label": "Eligible View \u2713", "users": 3, "type": "success", "screen": "eligible"}, {"id": 13, "label": "Not Eligible", "users": 18, "type": "failure", "screen": "not_eligible"}, {"id": 14, "label": "Affordability Failed", "users": 6, "type": "failure", "screen": "affor_failed"}, {"id": 15, "label": "Drop-off (Verif)", "users": 8, "type": "dropoff", "screen": null}];
+const SLINKS = [{"source": 0, "target": 1, "value": 55}, {"source": 1, "target": 2, "value": 51}, {"source": 1, "target": 5, "value": 4}, {"source": 2, "target": 3, "value": 46}, {"source": 2, "target": 4, "value": 5}, {"source": 3, "target": 5, "value": 46}, {"source": 5, "target": 6, "value": 49}, {"source": 5, "target": 11, "value": 1}, {"source": 6, "target": 7, "value": 49}, {"source": 7, "target": 8, "value": 47}, {"source": 7, "target": 11, "value": 2}, {"source": 8, "target": 9, "value": 47}, {"source": 9, "target": 10, "value": 35}, {"source": 9, "target": 11, "value": 12}, {"source": 10, "target": 12, "value": 3}, {"source": 10, "target": 13, "value": 18}, {"source": 10, "target": 14, "value": 6}, {"source": 10, "target": 15, "value": 8}];
+const SCREENS = {"intro": "\napp.innerHTML = DS.screen({\n  appBar: DS.appBar({ leftIcon: null, rightIcon: 'close' }),\n  content: `\n    <div style=\"display:flex;flex-direction:column;align-items:center;padding:8px 4px 24px;gap:0\">\n      ${DS.localImage({ label: 'ic_affordability_intro', ratio: '1/1', style: 'width:110px;height:110px;margin:0 auto 16px' })}\n      <h2 class=\"t t-hBold3\" style=\"text-align:center;padding:0 8px\">Affordability Check</h2>\n      <p class=\"t t-body1\" style=\"text-align:center;color:var(--text-bodyMedium);margin-top:8px;padding:0 4px\">\n        Required by the <strong>NCR</strong> to protect your financial safety by ensuring your loan is affordable for you.\n      </p>\n      <div style=\"flex:1;min-height:24px\"></div>\n      <p class=\"t t-title4\" style=\"text-align:center;color:var(--text-bodyLight);margin-top:32px;text-transform:uppercase;letter-spacing:.08em;font-size:11px\">Regulated by</p>\n      ${DS.localImage({ label: 'NCR + NCA logos', ratio: '5/1', style: 'width:140px;height:28px;margin:8px auto 0' })}\n    </div>`,\n  bottomBar: DS.bottomBox({}, [\n    DS.btn({ text: 'Continue', style: 'primary', size: 'large', chevron: true, action: 'Continue' }),\n  ]),\n});\n", "method_sel": "\napp.innerHTML = DS.screen({\n  appBar: DS.appBar({ title: 'AFFORDABILITY CHECK', leftIcon: 'back', rightIcon: 'help' }),\n  content: `\n    <div style=\"display:flex;flex-direction:column;padding:16px 0 24px;gap:0\">\n      <h2 class=\"t t-hBold3\" style=\"text-align:center;padding:0 4px;margin-bottom:4px\">Share bank statement</h2>\n      <p class=\"t t-body1\" style=\"text-align:center;color:var(--text-bodyMedium);margin-bottom:16px\">Choose method</p>\n      <!-- Connect your bank card -->\n      <div style=\"background:var(--surface-card);border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.12);padding:16px;margin-bottom:16px;display:flex;flex-direction:column;gap:8px;cursor:pointer\">\n        <div style=\"display:flex;align-items:center;gap:12px\">\n          <div style=\"width:48px;height:48px;background:var(--surface-mediumClear,rgba(99,102,241,.1));border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0\">\n            <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"><rect x=\"2\" y=\"7\" width=\"20\" height=\"14\" rx=\"2\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M2 10h20M7 15h2M11 15h6\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M5 4l7-2 7 2\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg>\n          </div>\n          <div style=\"flex:1\">\n            <p class=\"t t-titleBold3\" style=\"margin:0\">Connect your bank</p>\n            <span style=\"display:inline-flex;align-items:center;gap:4px;background:rgba(34,197,94,.12);color:#16a34a;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:4px\">\n              <svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M13 2L4 13h7l-2 9 9-11h-7l2-9z\"/></svg> Fast!\n            </span>\n          </div>\n          <svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M9 18l6-6-6-6\"/></svg>\n        </div>\n      </div>\n      <!-- Upload from phone card -->\n      <div style=\"background:var(--surface-card);border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.12);padding:16px;display:flex;flex-direction:column;gap:8px;cursor:pointer\">\n        <div style=\"display:flex;align-items:center;gap:12px\">\n          <div style=\"width:48px;height:48px;background:var(--surface-mediumClear,rgba(99,102,241,.1));border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0\">\n            <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M14 2v6h6M12 18v-6M9 15l3-3 3 3\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>\n          </div>\n          <div style=\"flex:1\">\n            <p class=\"t t-titleBold3\" style=\"margin:0\">Upload from phone</p>\n          </div>\n          <svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M9 18l6-6-6-6\"/></svg>\n        </div>\n        <!-- Requirements -->\n        <div style=\"padding-left:8px;display:flex;flex-direction:column;gap:4px;margin-top:4px\">\n          <div style=\"display:flex;align-items:center;gap:8px\"><span style=\"width:5px;height:5px;border-radius:50%;background:var(--text-bodyDark);display:inline-block;flex-shrink:0\"></span><span class=\"t t-bodyBold3\" style=\"font-size:12px\">PDF file.</span></div>\n          <div style=\"display:flex;align-items:center;gap:8px\"><span style=\"width:5px;height:5px;border-radius:50%;background:var(--text-bodyDark);display:inline-block;flex-shrink:0\"></span><span class=\"t t-bodyBold3\" style=\"font-size:12px\">Includes 3 months of transactions.</span></div>\n          <div style=\"display:flex;align-items:center;gap:8px\"><span style=\"width:5px;height:5px;border-radius:50%;background:var(--text-bodyDark);display:inline-block;flex-shrink:0\"></span><span class=\"t t-bodyBold3\" style=\"font-size:12px\">Includes your full name.</span></div>\n        </div>\n      </div>\n    </div>`,\n});\n", "doc_upload": "\napp.innerHTML = DS.screen({\n  content: `<div style=\"height:100%;background:rgba(0,0,0,.3)\"></div>`,\n  bottomSheet: DS.bottomSheet({ title: '', onClose: true, onBack: false }, `\n    <div style=\"display:flex;flex-direction:column;align-items:center;padding:0 4px 8px;gap:0\">\n      ${DS.localImage({ label: 'upload intro illustration', ratio: '16/7', style: 'width:100%;margin-bottom:16px' })}\n      <p class=\"t t-titleBold1\" style=\"text-align:center;padding:0 8px;margin-bottom:4px\">Upload Bank Statement</p>\n      <p class=\"t t-body2\" style=\"text-align:center;color:var(--text-bodyMedium);margin-bottom:16px\">PDF \u00b7 JPG \u00b7 PNG</p>\n      <div style=\"width:100%;display:flex;flex-direction:column;gap:8px;margin-bottom:20px\">\n        <div style=\"display:flex;align-items:center;gap:10px\"><span style=\"width:22px;height:22px;border-radius:50%;background:var(--color-primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0\">\u2713</span><span class=\"t t-body2\">PDF file.</span></div>\n        <div style=\"display:flex;align-items:center;gap:10px\"><span style=\"width:22px;height:22px;border-radius:50%;background:var(--color-primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0\">\u2713</span><span class=\"t t-body2\">Includes 3 months of transactions.</span></div>\n        <div style=\"display:flex;align-items:center;gap:10px\"><span style=\"width:22px;height:22px;border-radius:50%;background:var(--color-primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0\">\u2713</span><span class=\"t t-body2\">Includes your full name.</span></div>\n      </div>\n      ${DS.btn({ text: 'Upload', style: 'primary', size: 'large', action: 'Upload' })}\n    </div>\n  `),\n});\n", "file_type": "\napp.innerHTML = DS.screen({\n  content: `<div style=\"height:100%;background:rgba(0,0,0,.3)\"></div>`,\n  bottomSheet: DS.bottomSheet({ title: 'Upload Statement', onClose: true, onBack: true }, `\n    <div style=\"display:flex;flex-direction:column;gap:10px;padding:8px 0 16px\">\n      ${DS.btn({ text: 'Take a photo', style: 'secondaryGray', size: 'medium', action: 'Camera' })}\n      ${DS.btn({ text: 'Open Gallery', style: 'secondaryGray', size: 'medium', action: 'Gallery' })}\n      ${DS.btn({ text: 'Upload files', style: 'secondaryGray', size: 'medium', action: 'Storage' })}\n    </div>\n  `),\n});\n", "uploading": "\napp.innerHTML = DS.screen({\n  content: `<div style=\"height:100%;background:rgba(0,0,0,.3)\"></div>`,\n  bottomSheet: DS.bottomSheet({ title: 'Bank Statement', onClose: true, onBack: false }, `\n    <div style=\"display:flex;flex-direction:column;gap:0;padding-bottom:8px\">\n      <p class=\"t t-body2\" style=\"color:var(--text-bodyMedium);margin-bottom:12px\">1 selected file(s)</p>\n      <!-- File attachment row -->\n      <div style=\"display:flex;align-items:center;gap:12px;background:var(--surface-card);border-radius:12px;padding:12px;margin-bottom:12px\">\n        <div style=\"width:40px;height:40px;background:rgba(239,68,68,.1);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0\">\n          <svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><path d=\"M14 2v6h6\" stroke=\"#ef4444\" stroke-width=\"1.5\"/></svg>\n        </div>\n        <div style=\"flex:1;min-width:0\">\n          <p class=\"t t-titleBold3\" style=\"margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap\">bank_statement_2024.pdf</p>\n          <p class=\"t t-body2\" style=\"color:var(--text-bodyMedium);margin:2px 0 0;font-size:11px\">1.2 MB</p>\n        </div>\n        <button style=\"background:none;border:none;cursor:pointer;color:var(--text-bodyMedium);padding:4px\">\u2715</button>\n      </div>\n      ${DS.btn({ text: 'Upload', style: 'primary', size: 'large', action: 'Upload' })}\n    </div>\n  `),\n});\n", "verif": "\napp.innerHTML = DS.screen({\n  appBar: '',\n  content: `\n    <div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:0 20px;gap:12px\">\n      <div style=\"display:flex;align-items:center;gap:2px\">\n        <span class=\"t t-titleBold1\">Verifying affordability</span>\n        <span class=\"t t-titleBold1\" style=\"animation:blink 1.2s infinite\">...</span>\n      </div>\n      <p class=\"t t-title2\" style=\"text-align:center;color:var(--text-bodyMedium)\">This may take a few minutes</p>\n      <div style=\"margin-top:24px\">${DS.loader({ size: 48, color: 'pink' })}</div>\n    </div>\n    <style>@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}</style>`,\n  bottomBar: '',\n});\n", "eligible": "\napp.innerHTML = DS.screen({\n  dark: true,\n  bgLayer: '<div style=\"background:linear-gradient(160deg,#1a0533 0%,#3b1d6e 45%,#6d28d9 100%);position:absolute;inset:0;border-radius:inherit\"></div>',\n  appBar: `<div style=\"display:flex;justify-content:flex-end;padding:8px 16px 0\">${DS.tinyBtn({ icon: 'close', style: 'white' })}</div>`,\n  content: `\n    <div style=\"display:flex;flex-direction:column;align-items:center;padding:8px 0 24px\">\n      ${DS.localImage({ label: 'coins animation', ratio: '2/1', style: 'width:160px;height:80px;margin:0 auto 16px;opacity:.8' })}\n      <!-- Loan offer card -->\n      <div style=\"background:var(--surface-card,#1f2233);border-radius:20px;padding:24px 20px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.4)\">\n        <p class=\"t t-titleBold1\" style=\"text-align:center;color:var(--text-titleDark)\">Draw your personal credit</p>\n        <p class=\"t t-hBold1\" style=\"text-align:center;margin:8px 0 20px;font-size:36px;color:var(--text-titleDark)\">R 5,000</p>\n        ${DS.btn({ text: 'Get it now', style: 'special', size: 'large', action: 'DrawNow' })}\n      </div>\n    </div>`,\n  bottomBar: '',\n});\n", "not_eligible": "\napp.innerHTML = DS.screen({\n  appBar: `<div style=\"display:flex;justify-content:flex-end;padding:8px 16px 0\">${DS.tinyBtn({ icon: 'close', style: 'gray' })}</div>`,\n  content: `\n    <div style=\"display:flex;flex-direction:column;align-items:center;padding:16px 16px 24px\">\n      ${DS.localImage({ label: 'permanently_unqualified_lock', ratio: '1/1', style: 'width:90px;height:90px;margin:8px auto 16px' })}\n      <h2 class=\"t t-hBold3\" style=\"text-align:center;padding:0 8px;margin-bottom:8px\">Sorry, you do not qualify for credit at this time</h2>\n      <p class=\"t t-body1\" style=\"text-align:center;color:var(--text-bodyMedium)\">Please try again in the future</p>\n      <div style=\"flex:1;min-height:24px\"></div>\n      ${DS.btn({ text: 'Learn more', style: 'link', size: 'large', action: 'LearnMore' })}\n    </div>`,\n});\n", "affor_failed": "\napp.innerHTML = DS.screen({\n  appBar: '',\n  content: `\n    <div style=\"display:flex;flex-direction:column;padding:16px 0 24px;gap:0\">\n      <h2 class=\"t t-hBold3\" style=\"margin-bottom:8px\">We couldn't approve your application</h2>\n      <p class=\"t t-body1\" style=\"color:var(--text-bodyMedium);margin-bottom:24px\">Your bank statement didn't show enough income for the loan amount you applied for.</p>\n      ${DS.btn({ text: 'Try again', style: 'primary', size: 'large', action: 'TryAgain' })}\n      <div style=\"margin-top:8px\">${DS.btn({ text: 'Contact support', style: 'secondaryGray', size: 'large', action: 'ContactSupport' })}</div>\n    </div>`,\n});\n"};
+const TOP_PATHS = [{"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View \u2192 Selected Files View \u2192 Click Upload Files \u2192 Uploading In Progress View \u2192 Verification In Progress View \u2192 Not Eligible View", "users": 3}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Method Selection View \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View \u2192 Selected Files View \u2192 Click Upload Files \u2192 Uploading In Progress View \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View", "users": 2}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Method Selection View \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View \u2192 Selected Files View", "users": 2}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View \u2192 Selected Files View \u2192 Click Upload Files \u2192 Uploading In Progress View \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 Click Upload Files \u2192 Uploading In Progress View \u2192 Doc Upload Intro View", "users": 2}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Verification In Progress View \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View \u2192 Selected Files View \u2192 File Type Selection View \u2192 Selected Files View \u2192 Click Upload Files", "users": 1}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Method Selection View \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 File Upload Intro View \u2192 Select Bank Connect \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Method Selection View \u2192 Select Bank Connect", "users": 1}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Method Selection View \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 File Upload Intro View \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View \u2192 Selected Files View \u2192 Click Upload Files \u2192 Uploading In Progress View", "users": 1}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View \u2192 Not Eligible View", "users": 1}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View \u2192 Selected Files View \u2192 Click Upload Files \u2192 Uploading In Progress View \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Upload Intro View \u2192 Select Upload Statement", "users": 1}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 File Type Selection View \u2192 Click Continue (Doc Upload) \u2192 Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload)", "users": 1}];
+const FUNNEL_A = [["Intro View", 55], ["Click Get Started", 55], ["Method Selection View", 55], ["Select Bank Connect", 51], ["Eligible View", 3]];
+const FUNNEL_B = [["Select Upload Statement", 50], ["Doc Upload Intro View", 50], ["Click Continue (Doc Upload)", 49], ["File Type Selection View", 49], ["Click Upload Files", 47], ["Uploading In Progress View", 47], ["Verification In Progress View", 35], ["Eligible View", 3]];
+const TOTAL = 55;
+// DATA_RANGE: 2026-05-22 to 2026-06-03
+// LAST_REFRESH: 2026-06-07
+
+const TYPE_COLOR = {
+  view:    '#3b82f6',
+  action:  '#14b8a6',
+  warning: '#a78bfa',
+  success: '#22c55e',
+  failure: '#ef4444',
+  dropoff: '#6b7280',
+};
+
+// ── Step-flow data ────────────────────────────────────────────────────────
+const DROPOFF = '[DROP-OFF]';
+const TOTAL_STARTERS = TOTAL; // 55
+
+// Transitions derived from SNODES/SLINKS DAG
+const TRANSITIONS = [
+  // s=1 — entry
+  { s:1, f:'Intro View', t:'Method Selection View', c:55 },
+  // s=2 — method choice
+  { s:2, f:'Method Selection View', t:'Select Bank Connect', c:51 },
+  { s:2, f:'Method Selection View', t:'Doc Upload Intro View', c:4 },
+  // s=3 — bank connect path
+  { s:3, f:'Select Bank Connect', t:'BC → Switched to Upload', c:46 },
+  { s:3, f:'Select Bank Connect', t:DROPOFF, c:5 },
+  // s=4 — BC bounce → doc upload
+  { s:4, f:'BC → Switched to Upload', t:'Doc Upload Intro View', c:46 },
+  // s=5 — doc upload → continue
+  { s:5, f:'Doc Upload Intro View', t:'Click Continue', c:49 },
+  { s:5, f:'Doc Upload Intro View', t:DROPOFF, c:1 },
+  // s=6 — continue → file type
+  { s:6, f:'Click Continue', t:'File Type Selection', c:49 },
+  // s=7 — file type → upload or drop
+  { s:7, f:'File Type Selection', t:'Click Upload Files', c:47 },
+  { s:7, f:'File Type Selection', t:DROPOFF, c:2 },
+  // s=8 — upload → uploading
+  { s:8, f:'Click Upload Files', t:'Uploading In Progress', c:47 },
+  // s=9 — uploading → verif or drop
+  { s:9, f:'Uploading In Progress', t:'Verification In Progress', c:35 },
+  { s:9, f:'Uploading In Progress', t:DROPOFF, c:12 },
+  // s=10 — verification outcomes
+  { s:10, f:'Verification In Progress', t:'Eligible View ✓', c:3 },
+  { s:10, f:'Verification In Progress', t:'Not Eligible', c:18 },
+  { s:10, f:'Verification In Progress', t:'Affordability Failed', c:6 },
+  { s:10, f:'Verification In Progress', t:DROPOFF, c:8 },
+  // s=11 — terminal: outcomes as source nodes so they render as a step column when s=10 is expanded
+  { s:11, f:'Eligible View ✓', t:DROPOFF, c:3 },
+  { s:11, f:'Not Eligible', t:DROPOFF, c:18 },
+  { s:11, f:'Affordability Failed', t:DROPOFF, c:6 },
+];
+
+// Maps event name → SCREENS key (null = no screen)
+const EVENT_SCREEN = {
+  'Intro View': 'intro',
+  'Method Selection View': 'method_sel',
+  'Select Bank Connect': 'method_sel',
+  'BC → Switched to Upload': null,
+  'Doc Upload Intro View': 'doc_upload',
+  'Click Continue': null,
+  'File Type Selection': 'file_type',
+  'Click Upload Files': null,
+  'Uploading In Progress': 'uploading',
+  'Verification In Progress': 'verif',
+  'Eligible View ✓': 'eligible',
+  'Not Eligible': 'not_eligible',
+  'Affordability Failed': 'affor_failed',
+};
+
+const AF_COLORS = {
+  'Intro View': '#3b82f6',
+  'Method Selection View': '#3b82f6',
+  'Select Bank Connect': '#a78bfa',
+  'BC → Switched to Upload': '#14b8a6',
+  'Doc Upload Intro View': '#3b82f6',
+  'Click Continue': '#14b8a6',
+  'File Type Selection': '#3b82f6',
+  'Click Upload Files': '#14b8a6',
+  'Uploading In Progress': '#0ea5e9',
+  'Verification In Progress': '#6366f1',
+  'Eligible View ✓': '#22c55e',
+  'Not Eligible': '#ef4444',
+  'Affordability Failed': '#ef4444',
+  '[DROP-OFF]': '#6b7280',
+};
+
+function nColor(e) { return AF_COLORS[e] || '#6366f1'; }
+
+const BOX_MIN_H = 36, BOX_MAX_H = 120;
+function calcCardHeight(count) {
+  if (!TOTAL_STARTERS) return BOX_MIN_H;
+  return Math.round(BOX_MIN_H + (count / TOTAL_STARTERS) * (BOX_MAX_H - BOX_MIN_H));
+}
+
+let selEvt = null;
+function closePanel() { selEvt = null; }
+
+function buildStepData(trans) {
+  const steps = {};
+  const maxStep = trans.length > 0 ? Math.max.apply(null, trans.map(function(t){ return t.s; })) : 0;
+  for (var s = 1; s <= maxStep; s++) {
+    var stepT = trans.filter(function(t){ return t.s === s; });
+    var events = {};
+    stepT.forEach(function(t){ events[t.f] = (events[t.f] || 0) + t.c; });
+    var total = Object.values(events).reduce(function(sum, c){ return sum + c; }, 0);
+    steps[s] = { events: events, total: total, flows: stepT.map(function(t){ return { f:t.f, t:t.t, c:t.c }; }) };
+  }
+  return { steps: steps, maxStep: maxStep };
+}
+
+var STEP_DATA = buildStepData(TRANSITIONS);
+var currentT = TOTAL_STARTERS;
+
+// ── Base renderStepFlow (immediately overridden below by progressive disclosure) ──
+function renderStepFlow() {
+  // placeholder — overridden by IIFE below
+}
+
+// ── Progressive disclosure ────────────────────────────────────────────────
+(function() {
+  var expandedSet = new Set();
+  var prevVisibleStepCount = 0;
+
+  function expKey(step, evt) { return step + ':' + evt; }
+
+  function getVisibleSteps() {
+    if (!STEP_DATA || STEP_DATA.maxStep === 0) return [];
+    var visible = [];
+    var s1 = STEP_DATA.steps[1];
+    if (!s1) return [];
+    var s1Evts = Object.entries(s1.events).sort(function(a,b){ return b[1]-a[1]; });
+    visible.push({ step: 1, events: s1Evts.map(function(pair){ return { evt: pair[0], cnt: pair[1] }; }) });
+
+    for (var s = 2; s <= STEP_DATA.maxStep; s++) {
+      var prevStep = s - 1;
+      var prevSD = STEP_DATA.steps[prevStep];
+      if (!prevSD) break;
+      var prevVisible = visible[visible.length - 1];
+      if (!prevVisible || prevVisible.step !== prevStep) break;
+      var expandedAtPrev = [];
+      prevVisible.events.forEach(function(ev) {
+        if (expandedSet.has(expKey(prevStep, ev.evt))) expandedAtPrev.push(ev.evt);
+      });
+      if (expandedAtPrev.length === 0) break;
+      var downstreamCounts = {};
+      prevSD.flows.forEach(function(f) {
+        if (expandedAtPrev.indexOf(f.f) >= 0 && f.t !== DROPOFF) {
+          downstreamCounts[f.t] = (downstreamCounts[f.t] || 0) + f.c;
+        }
+      });
+      var dsEntries = Object.entries(downstreamCounts).sort(function(a,b){ return b[1]-a[1]; });
+      if (dsEntries.length === 0) break;
+      visible.push({ step: s, events: dsEntries.map(function(pair){ return { evt: pair[0], cnt: pair[1] }; }) });
+    }
+    return visible;
+  }
+
+  function cleanDownstreamExpansions(fromStep) {
+    var vis = getVisibleSteps();
+    var validKeys = new Set();
+    vis.forEach(function(vs) {
+      vs.events.forEach(function(e) { validKeys.add(expKey(vs.step, e.evt)); });
+    });
+    var toRemove = [];
+    expandedSet.forEach(function(key) { if (!validKeys.has(key)) toRemove.push(key); });
+    toRemove.forEach(function(k) { expandedSet.delete(k); });
+  }
+
+  function drawFlowLinesProgressive() {
+    document.querySelectorAll('.flow-svg').forEach(function(el){ el.remove(); });
+    var row = document.getElementById('steps-row');
+    if (!row || !STEP_DATA) return;
+    var visibleSteps = getVisibleSteps();
+    for (var idx = 0; idx < visibleSteps.length - 1; idx++) {
+      var s = visibleSteps[idx].step;
+      var connEl = document.querySelector('[data-conn-step="' + s + '"]');
+      if (!connEl) continue;
+      var stepSD = STEP_DATA.steps[s];
+      if (!stepSD) continue;
+      var expandedSrcEvents = new Set();
+      visibleSteps[idx].events.forEach(function(e) {
+        if (expandedSet.has(expKey(s, e.evt))) expandedSrcEvents.add(e.evt);
+      });
+      var visibleTgtEvents = new Set(visibleSteps[idx + 1].events.map(function(e){ return e.evt; }));
+      var flows = stepSD.flows.filter(function(f) {
+        return f.t !== DROPOFF && expandedSrcEvents.has(f.f) && visibleTgtEvents.has(f.t);
+      });
+      if (flows.length === 0) continue;
+      var srcCards = row.querySelectorAll('[data-step="' + s + '"]');
+      var tgtCards = row.querySelectorAll('[data-step="' + (visibleSteps[idx+1].step) + '"]');
+      if (!srcCards.length || !tgtCards.length) continue;
+      var connRect = connEl.getBoundingClientRect();
+      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.classList.add('flow-svg');
+      var svgH = Math.max(connEl.offsetHeight, 400);
+      svg.setAttribute('viewBox', '0 0 ' + connEl.offsetWidth + ' ' + svgH);
+      svg.style.height = svgH + 'px';
+      var srcMap = {}, tgtMap = {};
+      srcCards.forEach(function(card) {
+        var evt = card.getAttribute('data-event');
+        var rect = card.getBoundingClientRect();
+        srcMap[evt] = { y: rect.top + rect.height / 2 - connRect.top };
+      });
+      tgtCards.forEach(function(card) {
+        var evt = card.getAttribute('data-event');
+        var rect = card.getBoundingClientRect();
+        tgtMap[evt] = { y: rect.top + rect.height / 2 - connRect.top };
+      });
+      var maxFlow = Math.max.apply(null, flows.map(function(f){ return f.c; }).concat([1]));
+      var w = connEl.offsetWidth;
+      var srcOffsets = {}, tgtOffsets = {};
+      flows.slice().sort(function(a,b){ return b.c-a.c; }).forEach(function(flow) {
+        var srcPos = srcMap[flow.f], tgtPos = tgtMap[flow.t];
+        if (!srcPos || !tgtPos) return;
+        var strokeW = Math.max(2, Math.min(20, (flow.c / maxFlow) * 20));
+        srcOffsets[flow.f] = srcOffsets[flow.f] || 0;
+        tgtOffsets[flow.t] = tgtOffsets[flow.t] || 0;
+        var srcY = srcPos.y + srcOffsets[flow.f];
+        var tgtY = tgtPos.y + tgtOffsets[flow.t];
+        srcOffsets[flow.f] += strokeW * 0.7;
+        tgtOffsets[flow.t] += strokeW * 0.7;
+        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        var cx1 = w * 0.35, cx2 = w * 0.65;
+        path.setAttribute('d', 'M 0 ' + srcY + ' C ' + cx1 + ' ' + srcY + ', ' + cx2 + ' ' + tgtY + ', ' + w + ' ' + tgtY);
+        var color = nColor(flow.t);
+        path.setAttribute('stroke', color);
+        path.setAttribute('stroke-width', strokeW);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('opacity', '0.25');
+        path.classList.add('flow-line');
+        path.style.pointerEvents = 'stroke';
+        path.addEventListener('mouseenter', function(){ path.setAttribute('opacity','0.6'); });
+        path.addEventListener('mouseleave', function(){ path.setAttribute('opacity','0.25'); });
+        svg.appendChild(path);
+      });
+      connEl.appendChild(svg);
+    }
+  }
+
+  renderStepFlow = function renderInteractiveFlow() {
+    var row = document.getElementById('steps-row');
+    if (!row) return;
+    row.innerHTML = '';
+    if (!STEP_DATA || STEP_DATA.maxStep === 0) return;
+
+    var visibleSteps = getVisibleSteps();
+    if (visibleSteps.length === 0) {
+      // Show just step 1
+      visibleSteps = (function(){
+        var s1 = STEP_DATA.steps[1];
+        if (!s1) return [];
+        var s1Evts = Object.entries(s1.events).sort(function(a,b){ return b[1]-a[1]; });
+        return [{ step: 1, events: s1Evts.map(function(p){ return { evt: p[0], cnt: p[1] }; }) }];
+      })();
+    }
+
+    var isNewSteps = visibleSteps.length > prevVisibleStepCount;
+
+    visibleSteps.forEach(function(vs, idx) {
+      var s = vs.step;
+      var sd = STEP_DATA.steps[s];
+      if (!sd) return;
+
+      var col = document.createElement('div');
+      col.className = 'step-col';
+      if (isNewSteps && idx >= prevVisibleStepCount) {
+        col.classList.add('entering');
+        col.addEventListener('animationend', function(){ col.classList.remove('entering'); }, { once: true });
+      }
+
+      var label = document.createElement('div');
+      label.className = 'step-label';
+      label.textContent = 'Step ' + s;
+      col.appendChild(label);
+
+      var evts = vs.events;
+      var total = evts.reduce(function(sum,e){ return sum+e.cnt; }, 0);
+      var minShow = Math.max(total * 0.005, 1);
+      var shown = evts.filter(function(e){ return e.cnt >= minShow; });
+      if (shown.length > 8) shown = shown.slice(0, 8);
+      var shownNames = new Set(shown.map(function(e){ return e.evt; }));
+      var othersC = evts.filter(function(e){ return !shownNames.has(e.evt); }).reduce(function(sum,e){ return sum+e.cnt; }, 0);
+
+      shown.forEach(function(evObj) {
+        var evt = evObj.evt;
+        var cnt = evObj.cnt;
+        var pct = currentT > 0 ? (cnt / currentT * 100).toFixed(1) : '0.0';
+        var color = nColor(evt);
+        var isExpanded = expandedSet.has(expKey(s, evt));
+        var isDrop = evt === DROPOFF;
+        var cardH = calcCardHeight(cnt);
+
+        var card = document.createElement('div');
+        card.className = 'evt-card' + (isExpanded ? ' expanded' : '');
+        card.setAttribute('data-step', s);
+        card.setAttribute('data-event', evt);
+        card.style.minHeight = cardH + 'px';
+        card.onclick = function(ev) {
+          ev.stopPropagation();
+          var key = expKey(s, evt);
+          if (expandedSet.has(key)) {
+            expandedSet.delete(key);
+            cleanDownstreamExpansions(s);
+          } else {
+            expandedSet.add(key);
+          }
+          selEvt = null;
+          renderStepFlow();
+        };
+
+        var chevron = isExpanded ? '▸' : '▷';
+        card.innerHTML =
+          '<div class="evt-body">' +
+            '<div class="evt-icon" style="background:' + color + '20;color:' + color + ';">' +
+              (isDrop ? '⊕' : '●') +
+            '</div>' +
+            '<div class="evt-name" style="color:' + (isDrop ? 'var(--muted)' : 'var(--text)') + '">' + evt + '</div>' +
+            '<div class="evt-pct" style="color:' + color + '">' + pct + '%</div>' +
+            '<span class="expand-chevron">' + chevron + '</span>' +
+          '</div>' +
+          '<div class="evt-sidebar" style="background:' + color + ';"></div>';
+        col.appendChild(card);
+      });
+
+      if (othersC > 0) {
+        var cardH2 = calcCardHeight(othersC);
+        var card2 = document.createElement('div');
+        card2.className = 'evt-card';
+        card2.style.minHeight = cardH2 + 'px';
+        card2.innerHTML =
+          '<div class="evt-body">' +
+            '<div class="evt-icon" style="background:var(--gray-dim);color:var(--muted);">≡</div>' +
+            '<div class="evt-name" style="color:var(--muted)">Other events</div>' +
+            '<div class="evt-pct" style="color:var(--muted)">' + (currentT > 0 ? (othersC / currentT * 100).toFixed(1) : '0.0') + '%</div>' +
+          '</div>' +
+          '<div class="evt-sidebar" style="background:var(--gray);"></div>';
+        col.appendChild(card2);
+      }
+
+      row.appendChild(col);
+
+      if (idx < visibleSteps.length - 1) {
+        var conn = document.createElement('div');
+        conn.className = 'step-conn';
+        conn.setAttribute('data-conn-step', s);
+        if (isNewSteps && idx >= prevVisibleStepCount - 1) {
+          conn.classList.add('entering');
+          conn.addEventListener('animationend', function(){ conn.classList.remove('entering'); }, { once: true });
+        }
+        row.appendChild(conn);
+      }
+    });
+
+    prevVisibleStepCount = visibleSteps.length;
+    requestAnimationFrame(function(){ requestAnimationFrame(drawFlowLinesProgressive); });
+  };
+})();
+
+// ── Mini phone mockup injection ───────────────────────────────────────────
+(function() {
+  var prevRender = renderStepFlow;
+  renderStepFlow = function() {
+    prevRender.apply(this, arguments);
+    document.querySelectorAll('.screen-mini-wrap').forEach(function(el){ el.remove(); });
+    document.querySelectorAll('.evt-card.expanded').forEach(function(card) {
+      var evt = card.getAttribute('data-event');
+      var screenKey = EVENT_SCREEN[evt];
+      if (!screenKey || !SCREENS[screenKey]) return;
+      var wrap = document.createElement('div');
+      wrap.className = 'screen-mini-wrap';
+      var frame = document.createElement('div');
+      frame.className = 'mini-phone-frame';
+      var inner = document.createElement('div');
+      inner.className = 'mini-phone-inner';
+      try { (new Function('app', 'DS', SCREENS[screenKey]))(inner, DS); }
+      catch(e) { inner.textContent = 'Error: ' + e.message; }
+      frame.appendChild(inner);
+      wrap.appendChild(frame);
+      card.parentNode.insertBefore(wrap, card.nextSibling);
+    });
+  };
+})();
+
+// ── Init: render on DOMContentLoaded or now if ready ─────────────────────
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() { renderStepFlow(); });
+} else {
+  renderStepFlow();
+}
+
+// ── Date range bar ───────────────────────────────────────────────────────
+const LOADED_START = new Date('2026-05-22');
+const LOADED_END   = new Date('2026-06-03');
+const LOADED_USERS = 55;
+const PRESET_DAYS  = { '7d': 7, '14d': 14, '30d': 30 };
+
+function fmtDate(d) {
+  return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+function presetDateRange(preset) {
+  const end   = new Date();
+  const start = new Date(end);
+  start.setDate(end.getDate() - PRESET_DAYS[preset]);
+  return { start, end };
+}
+function dateRangeMatchesLoaded(preset) {
+  const r = presetDateRange(preset);
+  const sameDay = (a, b) =>
+    a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+  return sameDay(r.start, LOADED_START) && sameDay(r.end, LOADED_END);
+}
+function selectPreset(preset) {
+  localStorage.setItem('za-affor-preset', preset);
+  renderDateBar();
+}
+function renderDateBar() {
+  var sel = localStorage.getItem('za-affor-preset') || '14d';
+  ['7d','14d','30d'].forEach(function(p) {
+    var btn = document.getElementById('drp-' + p.replace('d',''));
+    if (btn) btn.classList.toggle('active', p === sel);
+  });
+  var stale = document.getElementById('dr-stale');
+  if (stale) stale.style.display = dateRangeMatchesLoaded(sel) ? 'none' : 'inline';
+  // Compute next 9am
+  var now = new Date();
+  var next9 = new Date();
+  next9.setHours(9, 0, 0, 0);
+  if (now >= next9) next9.setDate(next9.getDate() + 1);
+  var h = next9.getHours(), m = next9.getMinutes();
+  var el = document.getElementById('dr-next-refresh');
+  if (el) el.textContent = '⏰ Next refresh: ' + next9.toLocaleDateString('en-GB',{weekday:'short'}) + ' 9:00 AM';
+}
+document.addEventListener('DOMContentLoaded', renderDateBar);
+
+// ── Tab switching ─────────────────────────────────────────────────────────
+function showTab(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'sankey') { setTimeout(function(){ if(typeof renderStepFlow==='function') renderStepFlow(); }, 50); }
+  if (name === 'screens') setTimeout(renderScreenGallery, 50);
+}
+
+// ── Screen preview (below diagram) ───────────────────────────────────────
+const NODE_HINTS = {
+  intro:        'Entry point. All 55 users saw this screen — 100% pass-through to next step.',
+  method_sel:   '55 users reached method selection. 51 (92.7%) tapped Bank Connect first, but all bounced back to upload.',
+  doc_upload:   '50 users reached upload intro — 4 skipped Bank Connect entirely.',
+  file_type:    '49 users opened file type picker. 2 dropped here (4.1% step drop-off).',
+  uploading:    '47 users selected a file. 12 dropped during upload (25.5% step drop-off).',
+  verif:        '35 users reached verification. 8 dropped here (22.9%). Longest wait state in the flow.',
+  eligible:     'Only 3 of 55 users (5.5%) received an eligible result. Primary conversion outcome.',
+  not_eligible: '18 users (32.7%) hit the not-eligible screen — largest failure outcome.',
+  affor_failed: '6 users (10.9%) hit affordability failed — insufficient income evidence.',
+};
+
+function showMockup(screenKey, nodeLabel) {
+  const script = SCREENS[screenKey];
+  if (!script) return;
+
+  const preview = document.getElementById('screen-preview');
+  if (!preview) return;
+
+  // Text
+  const labelEl = document.getElementById('preview-label');
+  const metaEl  = document.getElementById('preview-meta');
+  if (labelEl) labelEl.textContent = nodeLabel;
+  if (metaEl) {
+    const node = SNODES.find(n => n.screen === screenKey);
+    const pct  = node ? ((node.users / TOTAL) * 100).toFixed(1) : null;
+    const color = (SC_COLOR && SC_COLOR[node && node.type]) || '#3b82f6';
+    metaEl.innerHTML = node
+      ? `${node.users} users · <span style="color:${color};font-weight:600">${pct}%</span>`
+      : '';
+  }
+
+  // Phone
+  const phoneWrap = preview.querySelector('.preview-phone');
+  if (phoneWrap) {
+    phoneWrap.innerHTML = '';
+    const appDiv = document.createElement('div');
+    phoneWrap.appendChild(appDiv);
+    try {
+      (new Function('app', 'DS', script))(appDiv, DS);
+    } catch(e) {
+      appDiv.textContent = 'Render error: ' + e.message;
+    }
+  }
+
+  preview.style.display = 'flex';
+  setTimeout(() => preview.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
+}
+
+// ── D3 Sankey ─────────────────────────────────────────────────────────────
+let sankeyDone = false;
+function renderSankey() {
+  if (sankeyDone) return;
+  const svgEl = document.getElementById('sankey-svg');
+  const W = Math.max(svgEl.parentElement.clientWidth - 40, 700);
+  if (W < 200) { setTimeout(renderSankey, 100); return; }
+  sankeyDone = true;
+
+  const H = 700;
+  const margin = { t: 20, r: 130, b: 20, l: 130 };
+  const iW = W - margin.l - margin.r;
+  const iH = H - margin.t - margin.b;
+
+  svgEl.setAttribute('height', H);
+  svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+  const svg = d3.select(svgEl);
+
+  // White SVG background
+  svg.append('rect').attr('width', W).attr('height', H).attr('fill', '#ffffff');
+
+  const g = svg.append('g').attr('transform', `translate(${margin.l},${margin.t})`);
+
+  // Per-node distinct color palette
+  const NODE_PALETTE = [
+    '#4f86f7','#7c3aed','#f97316','#06b6d4','#94a3b8',
+    '#8b5cf6','#0ea5e9','#3b82f6','#6366f1','#f59e0b',
+    '#10b981','#94a3b8','#22c55e','#ef4444','#f43f5e','#94a3b8'
+  ];
+  const nodeColor = d => NODE_PALETTE[d.id % NODE_PALETTE.length];
+
+  // Prepare data
+  const sankeyData = {
+    nodes: SNODES.map(n => ({...n})),
+    links: SLINKS.map(l => ({...l})),
+  };
+
+  const layout = d3.sankey()
+    .nodeWidth(22)
+    .nodePadding(22)
+    .extent([[0, 0], [iW, iH]]);
+
+  const { nodes, links } = layout(sankeyData);
+
+  // Draw links
+  g.append('g').selectAll('.s-link')
+    .data(links)
+    .join('path')
+      .attr('class', 's-link')
+      .attr('d', d3.sankeyLinkHorizontal())
+      .attr('stroke', d => nodeColor(d.source))
+      .attr('stroke-width', d => Math.max(1, d.width))
+      .on('mouseover', function(event, d) {
+        d3.select(this).attr('opacity', .75);
+        showTooltip(event, `${d.source.label} → ${d.target.label}: ${d.value} users`);
+      })
+      .on('mouseout', function() {
+        d3.select(this).attr('opacity', null);
+        hideTooltip();
+      });
+
+  // Draw nodes
+  const nodeG = g.append('g').selectAll('.s-node')
+    .data(nodes)
+    .join('g')
+      .attr('class', 's-node')
+      .attr('transform', d => `translate(${d.x0},${d.y0})`);
+
+  nodeG.append('rect')
+    .attr('height', d => Math.max(4, d.y1 - d.y0))
+    .attr('width', d => d.x1 - d.x0)
+    .attr('fill', d => nodeColor(d))
+    .attr('rx', 4)
+    .style('cursor', d => d.screen ? 'pointer' : 'default')
+    .on('click', (event, d) => {
+      event.stopPropagation();
+      if (d.screen) showMockup(d.screen, d.label);
+    });
+
+  // Labels — outside the margin area, dark text on white bg
+  nodeG.append('text')
+    .attr('x', d => d.x0 < iW / 2 ? -(margin.l - (d.x1 - d.x0)) - 8 : (d.x1 - d.x0) + 8)
+    .attr('y', d => (d.y1 - d.y0) / 2)
+    .attr('dy', '0.35em')
+    .attr('text-anchor', d => d.x0 < iW / 2 ? 'start' : 'start')
+    .attr('font-size', '12')
+    .attr('font-weight', '500')
+    .attr('fill', '#1e293b')
+    .text(d => `${d.label} (${d.users})`);
+}
+
+// ── Tooltip ───────────────────────────────────────────────────────────────
+let tt = null;
+function showTooltip(event, text) {
+  if (!tt) { tt = document.createElement('div');
+    tt.style.cssText = 'position:fixed;background:#1f2233;border:1px solid #2a2d3a;border-radius:6px;padding:6px 10px;font-size:12px;color:#e4e4e7;pointer-events:none;z-index:9999';
+    document.body.appendChild(tt); }
+  tt.textContent = text;
+  tt.style.left = (event.clientX + 12) + 'px';
+  tt.style.top  = (event.clientY - 20) + 'px';
+  tt.style.display = 'block';
+}
+function hideTooltip() { if (tt) tt.style.display = 'none'; }
+
+// ── Funnel bars ───────────────────────────────────────────────────────────
+const FUNNEL_STEP_SCREEN = {
+  'Intro View':               'intro',
+  'Method Selection View':    'method_sel',
+  'Select Upload Statement':  'method_sel',
+  'Select Bank Connect':      'method_sel',
+  'Doc Upload Intro View':    'doc_upload',
+  'File Type Selection View': 'file_type',
+  'Uploading In Progress View':     'uploading',
+  'Verification In Progress View':  'verif',
+  'Eligible View':            'eligible',
+};
+
+function renderFunnel(id, steps, color) {
+  const max = steps[0][1];
+  const container = document.getElementById(id);
+
+  const rowHtml = steps.map(([lbl, n], i) => {
+    const pe  = (n / max * 100).toFixed(1);
+    const ps  = i > 0 ? (n / steps[i-1][1] * 100).toFixed(1) : null;
+    const key = FUNNEL_STEP_SCREEN[lbl];
+    const connector = i > 0 ? `
+      <div class="funnel-connector">
+        <div class="funnel-connector-pct">${ps}%</div>
+        <div class="funnel-connector-arrow">→</div>
+      </div>` : '';
+    const phonePlaceholder = key
+      ? `<div class="funnel-step-phone" id="fsp-${id}-${i}"></div>`
+      : `<div class="funnel-step-empty"><span>action / no screen</span></div>`;
+    return `${connector}<div class="funnel-step-wrap"><div class="funnel-step">
+      <div class="funnel-step-meta">
+        <div class="funnel-step-name">${lbl}</div>
+        <div class="funnel-step-n" style="color:${color}">${n}</div>
+        <div class="funnel-step-pct">${pe}% of entry${i > 0 ? ` · step ${ps}%` : ''}</div>
+        <div class="funnel-step-bar"><div class="funnel-step-bar-fill" style="width:${pe}%;background:${color}"></div></div>
+      </div>
+      ${phonePlaceholder}
+    </div></div>`;
+  }).join('');
+
+  container.innerHTML = `<div class="funnel-steps-row">${rowHtml}</div>`;
+
+  // Render phones after DOM update
+  steps.forEach(([lbl], i) => {
+    const key = FUNNEL_STEP_SCREEN[lbl];
+    if (!key || !SCREENS[key]) return;
+    const el = document.getElementById(`fsp-${id}-${i}`);
+    if (!el) return;
+    const appDiv = document.createElement('div');
+    el.appendChild(appDiv);
+    try { (new Function('app', 'DS', SCREENS[key]))(appDiv, DS); }
+    catch(e) { appDiv.textContent = e.message; }
+  });
+}
+
+// ── Top paths ─────────────────────────────────────────────────────────────
+function renderPaths() {
+  document.getElementById('top-paths-list').innerHTML = TOP_PATHS.map(p => {
+    const parts = p.path.split(' → ');
+    const html = parts.map(s => {
+      let c = '#9ca3af';
+      if (s.includes('Eligible') && !s.includes('Not')) c = '#22c55e';
+      else if (s.includes('Not Eligible') || s.includes('Failed')) c = '#ef4444';
+      else if (s.includes('Select')) c = '#14b8a6';
+      else if (s.includes('Click')) c = '#3b82f6';
+      return `<span style="color:${c}">${s}</span>`;
+    }).join(' <span style="color:#6366f1">→</span> ');
+    return `<div class="path-row"><span class="pc">${p.users}×</span><div>${html}</div></div>`;
+  }).join('');
+}
+
+// ── Screen gallery ────────────────────────────────────────────────────────
+const SCREEN_META = [
+  { key: 'intro',        label: 'Intro View',             users: 55, pct: '100%',  type: 'view'    },
+  { key: 'method_sel',   label: 'Method Selection',        users: 55, pct: '100%',  type: 'view'    },
+  { key: 'doc_upload',   label: 'Doc Upload Intro',         users: 50, pct: '90.9%', type: 'view'    },
+  { key: 'file_type',    label: 'File Type Selection',      users: 49, pct: '89.1%', type: 'view'    },
+  { key: 'uploading',    label: 'Uploading In Progress',    users: 47, pct: '85.5%', type: 'view'    },
+  { key: 'verif',        label: 'Verification In Progress', users: 35, pct: '63.6%', type: 'view'    },
+  { key: 'eligible',     label: 'Eligible ✓',              users: 3,  pct: '5.5%',  type: 'success' },
+  { key: 'not_eligible', label: 'Not Eligible',             users: 18, pct: '32.7%', type: 'failure' },
+  { key: 'affor_failed', label: 'Affordability Failed',     users: 6,  pct: '10.9%', type: 'failure' },
+];
+const SC_COLOR = { view: '#3b82f6', success: '#22c55e', failure: '#ef4444' };
+
+let screensRendered = false;
+function renderScreenGallery() {
+  if (screensRendered) return;
+  screensRendered = true;
+  const gallery = document.getElementById('screens-gallery');
+  SCREEN_META.forEach(({ key, label, users, pct, type }) => {
+    const script = SCREENS[key];
+    if (!script) return;
+    const card = document.createElement('div');
+    card.className = 'screen-card';
+    const appId = 'sg-app-' + key;
+    card.innerHTML = `
+      <div class="screen-card-header">
+        <div class="screen-card-label">${label}</div>
+        <div class="screen-card-meta">${users} users · <span style="color:${SC_COLOR[type]||'#9ca3af'}">${pct}</span></div>
+      </div>
+      <div class="screen-card-phone"><div id="${appId}"></div></div>`;
+    gallery.appendChild(card);
+    try {
+      const fn = new Function('app', 'DS', script);
+      fn(document.getElementById(appId), DS);
+    } catch(e) {
+      document.getElementById(appId).innerHTML =
+        `<div style="color:#ef4444;font-size:11px;padding:8px">Error: ${e.message}</div>`;
+    }
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+renderFunnel('funnel-a', FUNNEL_A, '#3b82f6');
+renderFunnel('funnel-b', FUNNEL_B, '#14b8a6');
+renderPaths();
+</script>
+</body>
+</html>
