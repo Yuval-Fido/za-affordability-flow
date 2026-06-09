@@ -2629,8 +2629,20 @@ const TRANSITIONS = [
   {
     "s": 2,
     "f": "Method Selection View",
+    "t": "Eligible View \u2713",
+    "c": 1
+  },
+  {
+    "s": 2,
+    "f": "Method Selection View",
     "t": "Intro View",
     "c": 26
+  },
+  {
+    "s": 2,
+    "f": "Method Selection View",
+    "t": "Not Eligible",
+    "c": 1
   },
   {
     "s": 2,
@@ -2642,7 +2654,7 @@ const TRANSITIONS = [
     "s": 2,
     "f": "Method Selection View",
     "t": "[DROP-OFF]",
-    "c": 11
+    "c": 10
   },
   {
     "s": 4,
@@ -2714,31 +2726,37 @@ const TRANSITIONS = [
     "s": 10,
     "f": "Verification In Progress",
     "t": "Affordability Failed",
-    "c": 6
+    "c": 2
+  },
+  {
+    "s": 10,
+    "f": "Verification In Progress",
+    "t": "Eligible View \u2713",
+    "c": 12
   },
   {
     "s": 10,
     "f": "Verification In Progress",
     "t": "Intro View",
-    "c": 5
+    "c": 4
   },
   {
     "s": 10,
     "f": "Verification In Progress",
     "t": "Method Selection View",
-    "c": 9
+    "c": 7
   },
   {
     "s": 10,
     "f": "Verification In Progress",
     "t": "Not Eligible",
-    "c": 1
+    "c": 14
   },
   {
     "s": 10,
     "f": "Verification In Progress",
     "t": "[DROP-OFF]",
-    "c": 43
+    "c": 26
   },
   {
     "s": 11,
@@ -2784,9 +2802,45 @@ const TRANSITIONS = [
   },
   {
     "s": 11,
+    "f": "Eligible View \u2713",
+    "t": "Intro View",
+    "c": 2
+  },
+  {
+    "s": 11,
+    "f": "Eligible View \u2713",
+    "t": "Not Eligible",
+    "c": 1
+  },
+  {
+    "s": 11,
+    "f": "Eligible View \u2713",
+    "t": "[DROP-OFF]",
+    "c": 13
+  },
+  {
+    "s": 11,
+    "f": "Not Eligible",
+    "t": "Affordability Failed",
+    "c": 4
+  },
+  {
+    "s": 11,
+    "f": "Not Eligible",
+    "t": "Intro View",
+    "c": 1
+  },
+  {
+    "s": 11,
+    "f": "Not Eligible",
+    "t": "Method Selection View",
+    "c": 3
+  },
+  {
+    "s": 11,
     "f": "Not Eligible",
     "t": "[DROP-OFF]",
-    "c": 1
+    "c": 16
   }
 ];
 
