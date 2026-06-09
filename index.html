@@ -1584,7 +1584,7 @@ body { font-family: 'DM Sans', -apple-system, sans-serif;
 .badge.za { background: rgba(99,102,241,.15); border-color: #6366f1; color: #a78bfa; }
 .badge.warn { background: rgba(245,158,11,.14); border-color: #f59e0b; color: #f59e0b; }
 
-.tabs { display: flex; gap: 4px; max-width: 1400px; margin: 0 auto 20px;
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; max-width: 1400px; margin: 0 auto 20px;
   border-bottom: 1px solid var(--border); }
 .tab { padding: 8px 18px; font-size: 13px; font-weight: 500; cursor: pointer;
   border-radius: 6px 6px 0 0; color: var(--muted); background: none; border: none;
@@ -3276,8 +3276,9 @@ function showTab(name, btn) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   btn.classList.add('active');
-  if (name === 'sankey') { setTimeout(function(){ if(typeof renderStepFlow==='function') renderStepFlow(); }, 50); }
-  if (name === 'screens') setTimeout(renderScreenGallery, 50);
+  if (name === 'sankey')  { setTimeout(function(){ if(typeof renderStepFlow==='function') renderStepFlow(); }, 50); }
+  if (name === 'screens')  setTimeout(renderScreenGallery, 50);
+  if (name === 'backend')  setTimeout(renderBEFunnel, 50);
 }
 
 // ── Screen preview (below diagram) ───────────────────────────────────────
