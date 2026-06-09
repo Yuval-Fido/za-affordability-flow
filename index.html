@@ -1594,6 +1594,21 @@ body { font-family: 'DM Sans', -apple-system, sans-serif;
 .section { max-width: 1400px; margin: 0 auto; display: none; }
 .section.active { display: block; }
 
+/* ── Backend Events funnel ── */
+.be-wrap { padding: 8px 0 24px; }
+.be-funnel-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.be-funnel-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.be-legend { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+.be-legend-item { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--text); }
+.be-legend-dot { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+.be-row { display: flex; flex-direction: column; align-items: center; margin-bottom: 1px; }
+.be-bar { display: flex; height: 44px; overflow: hidden; border-radius: 2px; min-width: 2px; transition: width 0.4s; }
+.be-seg { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.be-meta { display: flex; justify-content: space-between; padding: 5px 2px 12px; font-size: 12px; }
+.be-label { font-weight: 600; color: var(--text); }
+.be-stat { color: var(--muted); }
+.be-conv-badge { display: inline-block; background: rgba(99,102,241,0.18); color: #818cf8; font-size: 11px; font-weight: 600; border-radius: 10px; padding: 1px 7px; margin-left: 7px; }
+
 /* ── Sankey tab layout ── */
 .sankey-layout { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
 .sankey-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; }
@@ -1770,6 +1785,7 @@ body { font-family: 'DM Sans', -apple-system, sans-serif;
   <button class="tab" onclick="showTab('funnels',this)">Funnels</button>
   <button class="tab" onclick="showTab('paths',this)">Top Paths</button>
   <button class="tab" onclick="showTab('screens',this)">App Screens</button>
+  <button class="tab" onclick="showTab('backend',this)">Backend Events</button>
 </div>
 
 <!-- OVERVIEW -->
@@ -1822,6 +1838,17 @@ body { font-family: 'DM Sans', -apple-system, sans-serif;
 <div id="tab-screens" class="section">
   <div class="screens-gallery" id="screens-gallery"></div>
   <div class="source">App screens for each event node in the flow. Scale: 52% of real device size. Tap a node in Flow Diagram to isolate a single screen.</div>
+</div>
+
+<!-- BACKEND EVENTS -->
+<div id="tab-backend" class="section">
+  <div class="be-wrap">
+    <div class="be-funnel-title">ZA Affordability Backend Events Flow</div>
+    <div class="be-funnel-sub">May 19 – Jun 9, 2026 · Sequential cohort · 55 total starters</div>
+    <div class="be-legend" id="be-legend"></div>
+    <div id="be-funnel"></div>
+  </div>
+  <div class="source">Backend events · ZA_PROD.DATA.BACKEND_NOTIFICATIONS_FLAT · DISTINCT users per step · date-filtered</div>
 </div>
 
 <script>
@@ -3522,10 +3549,71 @@ function renderScreenGallery() {
   });
 }
 
+// ── Backend Events Funnel ─────────────────────────────────────────────────
+const BE_FUNNEL_DATA = [
+  { step: '1. Bank Statements Retrieved', total: 55, bc: 37, mu: 14, tr: 4 },
+  { step: '2. Income Check',              total: 53, bc: 35, mu: 14, tr: 4 },
+  { step: '3. Income Success',            total: 38, bc: 24, mu: 12, tr: 2 },
+  { step: '4. Norm Expenses Calculated',  total: 38, bc: 24, mu: 12, tr: 2 },
+  { step: '5. Credit Profile Check',      total: 36, bc: 22, mu: 12, tr: 2 },
+  { step: '6. Credit Profile Success',    total: 36, bc: 22, mu: 12, tr: 2 },
+  { step: '7. Decision (Approved)',       total:  9, bc:  5, mu:  3, tr: 1 },
+];
+const BE_METHODS = [
+  { key: 'bc', label: 'Bank Connect',   color: '#f97316' },
+  { key: 'mu', label: 'Manual Upload',  color: '#6366f1' },
+  { key: 'tr', label: 'TruID',          color: '#14b8a6' },
+];
+
+function renderBEFunnel() {
+  var funnelEl = document.getElementById('be-funnel');
+  var legendEl = document.getElementById('be-legend');
+  if (!funnelEl) return;
+  if (legendEl) {
+    legendEl.innerHTML = BE_METHODS.map(function(m) {
+      return '<div class="be-legend-item"><div class="be-legend-dot" style="background:' + m.color + '"></div>' + m.label + '</div>';
+    }).join('');
+  }
+  funnelEl.innerHTML = '';
+  var maxTotal = BE_FUNNEL_DATA[0].total;
+  BE_FUNNEL_DATA.forEach(function(d, idx) {
+    var widthPct = (d.total / maxTotal * 100).toFixed(1);
+    var convPct  = idx > 0 ? Math.round(d.total / BE_FUNNEL_DATA[idx - 1].total * 100) : null;
+    var e2ePct   = Math.round(d.total / maxTotal * 100);
+    var row = document.createElement('div');
+    row.className = 'be-row';
+    var bar = document.createElement('div');
+    bar.className = 'be-bar';
+    bar.style.width = widthPct + '%';
+    BE_METHODS.forEach(function(m) {
+      var count = d[m.key] || 0;
+      if (!count) return;
+      var seg = document.createElement('div');
+      seg.className = 'be-seg';
+      seg.style.background = m.color;
+      seg.style.flex = count;
+      seg.title = m.label + ': ' + count;
+      if (count / d.total > 0.12) seg.textContent = count;
+      bar.appendChild(seg);
+    });
+    row.appendChild(bar);
+    var meta = document.createElement('div');
+    meta.className = 'be-meta';
+    meta.style.width = widthPct + '%';
+    var badge = convPct !== null ? '<span class="be-conv-badge">↓ ' + convPct + '%</span>' : '';
+    meta.innerHTML =
+      '<span class="be-label">' + d.step + badge + '</span>' +
+      '<span class="be-stat">' + d.total + ' users · ' + e2ePct + '% of total</span>';
+    row.appendChild(meta);
+    funnelEl.appendChild(row);
+  });
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────
 renderFunnel('funnel-a', FUNNEL_A, '#3b82f6');
 renderFunnel('funnel-b', FUNNEL_B, '#14b8a6');
 renderPaths();
+renderBEFunnel();
 </script>
 </body>
 </html>
