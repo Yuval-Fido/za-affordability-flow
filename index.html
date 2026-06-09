@@ -2955,9 +2955,9 @@ function renderStepFlow() {
       });
       if (expandedAtPrev.length === 0) break;
       var downstreamCounts = {};
-      prevSD.flows.forEach(function(f) {
-        if (expandedAtPrev.indexOf(f.f) >= 0 && f.t !== DROPOFF) {
-          downstreamCounts[f.t] = (downstreamCounts[f.t] || 0) + f.c;
+      TRANSITIONS.forEach(function(tr) {
+        if (expandedAtPrev.indexOf(tr.f) >= 0 && tr.t !== DROPOFF) {
+          downstreamCounts[tr.t] = (downstreamCounts[tr.t] || 0) + tr.c;
         }
       });
       var dsEntries = Object.entries(downstreamCounts).sort(function(a,b){ return b[1]-a[1]; });
@@ -2994,7 +2994,7 @@ function renderStepFlow() {
         if (expandedSet.has(expKey(s, e.evt))) expandedSrcEvents.add(e.evt);
       });
       var visibleTgtEvents = new Set(visibleSteps[idx + 1].events.map(function(e){ return e.evt; }));
-      var flows = stepSD.flows.filter(function(f) {
+      var flows = TRANSITIONS.filter(function(f) {
         return f.t !== DROPOFF && expandedSrcEvents.has(f.f) && visibleTgtEvents.has(f.t);
       });
       if (flows.length === 0) continue;
