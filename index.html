@@ -1624,6 +1624,9 @@ body { font-family: 'DM Sans', -apple-system, sans-serif;
 .be-reason-stat { font-size: 12px; font-weight: 600; color: var(--text); width: 70px; text-align: right; flex-shrink: 0; }
 .be-drop-note { font-size: 12px; color: var(--muted); background: var(--bg); border-radius: 6px; padding: 8px 12px; margin-top: 10px; line-height: 1.5; }
 .be-source-chip { display: inline-block; font-size: 11px; font-weight: 600; background: rgba(20,184,166,0.12); color: #14b8a6; border-radius: 6px; padding: 1px 7px; margin-left: 6px; }
+.be-action { display: flex; align-items: flex-start; gap: 8px; margin-top: 6px; margin-bottom: 4px; padding: 7px 10px; background: rgba(99,102,241,0.07); border-left: 3px solid #6366f1; border-radius: 0 6px 6px 0; font-size: 12px; color: var(--text); line-height: 1.5; }
+.be-action-icon { flex-shrink: 0; font-size: 13px; margin-top: 1px; }
+.be-action-owner { display: inline-block; font-size: 11px; font-weight: 600; background: rgba(99,102,241,0.18); color: #818cf8; border-radius: 4px; padding: 0 5px; margin-left: 6px; white-space: nowrap; }
 
 /* ── Sankey tab layout ── */
 .sankey-layout { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
@@ -3590,9 +3593,24 @@ const BE_FAILURE_ANALYSIS = [
     usersOut: 75,
     source: 'TransUnion',
     reasons: [
-      { label: 'Adverse credit records',           code: 'affordability_credit_adverse_records',           users: 168, pct: 53.3, color: '#f87171' },
-      { label: 'Discretionary income below minimum', code: 'affordability_discretionary_income_below_minimum', users: 100, pct: 31.6, color: '#fb923c' },
-      { label: 'Credit delinquency',               code: 'affordability_credit_delinquency',               users:  46, pct: 14.6, color: '#facc15' },
+      {
+        label: 'Adverse credit records', code: 'affordability_credit_adverse_records',
+        users: 168, pct: 53.3, color: '#f87171',
+        action: 'No product fix — NCR-registered judgments/garnishees block lending by regulation. Add a pre-screen credit check before bank statement upload to surface this earlier and reduce wasted effort.',
+        owner: 'Product',
+      },
+      {
+        label: 'Discretionary income below minimum', code: 'affordability_discretionary_income_below_minimum',
+        users: 100, pct: 31.6, color: '#fb923c',
+        action: 'Review discretionary income floor for ZA cost of living. Consider a lower-tier loan product with smaller amount for borderline cases. Allow users to declare additional income sources not visible in bank statements.',
+        owner: 'Credit Risk',
+      },
+      {
+        label: 'Credit delinquency', code: 'affordability_credit_delinquency',
+        users: 46, pct: 14.6, color: '#facc15',
+        action: 'No immediate fix. Implement a re-engagement nudge (push/SMS) at 30/60/90 days after delinquency clears, prompting the user to re-apply.',
+        owner: 'CRM',
+      },
     ],
     note: 'All declines sourced from TransUnion bureau via BE_AFFORDABILITY_DEBT_REVIEW_DECLINED, which fires before the final DECISION event.',
   },
@@ -3603,9 +3621,14 @@ const BE_FAILURE_ANALYSIS = [
     usersOut: 466,
     source: null,
     reasons: [
-      { label: 'Short statement (insufficient history)', code: 'BE_AFFORDABILITY_SHORT_STATEMENT_REJECTED', users: 69, pct: 100, color: '#fb923c' },
+      {
+        label: 'Short statement (insufficient history)', code: 'BE_AFFORDABILITY_SHORT_STATEMENT_REJECTED',
+        users: 69, pct: 100, color: '#fb923c',
+        action: 'Show required minimum statement period (3 months) on the upload screen before the user selects a file. 69 hit this — 44 recover by re-uploading, 25 drop off permanently. Surfacing the requirement upfront should cut the 25 permanent drop-offs.',
+        owner: 'Mobile',
+      },
     ],
-    note: '69 users hit short statement rejection. ~44 retry and pass income verification — net permanent drop-off ~25 users. No further reason breakdown available in the data (all reason fields null on this event).',
+    note: '69 users hit short statement rejection. ~44 retry and pass income verification — net permanent drop-off ~25 users.',
   },
 ];
 
@@ -3630,6 +3653,9 @@ function renderBEAnalysis() {
       html += '<div class="be-reason-bar-wrap"><div class="be-reason-bar-fill" style="width:' + r.pct + '%;background:' + r.color + '"></div></div>';
       html += '<div class="be-reason-stat">' + r.users + ' · ' + r.pct + '%</div>';
       html += '</div>';
+      if (r.action) {
+        html += '<div class="be-action"><span class="be-action-icon">→</span><span>' + r.action + '<span class="be-action-owner">' + (r.owner || '') + '</span></span></div>';
+      }
     });
     if (drop.note) html += '<div class="be-drop-note">' + drop.note + '</div>';
     html += '</div>';
