@@ -1608,6 +1608,22 @@ body { font-family: 'DM Sans', -apple-system, sans-serif;
 .be-label { font-weight: 600; color: var(--text); }
 .be-stat { color: var(--muted); }
 .be-conv-badge { display: inline-block; background: rgba(99,102,241,0.18); color: #818cf8; font-size: 11px; font-weight: 600; border-radius: 10px; padding: 1px 7px; margin-left: 7px; }
+.be-analysis { margin-top: 40px; }
+.be-analysis-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.be-analysis-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+.be-drop { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 16px; }
+.be-drop-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.be-drop-step { font-size: 14px; font-weight: 700; color: var(--text); }
+.be-drop-badge { font-size: 13px; font-weight: 700; color: #f87171; background: rgba(248,113,113,0.12); border-radius: 8px; padding: 2px 9px; }
+.be-drop-count { font-size: 13px; color: var(--muted); }
+.be-reason-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.be-reason-label { font-size: 13px; color: var(--text); flex: 1; min-width: 0; }
+.be-reason-code { font-size: 11px; font-family: monospace; color: var(--muted); background: var(--bg); border-radius: 4px; padding: 1px 5px; white-space: nowrap; }
+.be-reason-bar-wrap { width: 160px; flex-shrink: 0; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.be-reason-bar-fill { height: 100%; border-radius: 4px; }
+.be-reason-stat { font-size: 12px; font-weight: 600; color: var(--text); width: 70px; text-align: right; flex-shrink: 0; }
+.be-drop-note { font-size: 12px; color: var(--muted); background: var(--bg); border-radius: 6px; padding: 8px 12px; margin-top: 10px; line-height: 1.5; }
+.be-source-chip { display: inline-block; font-size: 11px; font-weight: 600; background: rgba(20,184,166,0.12); color: #14b8a6; border-radius: 6px; padding: 1px 7px; margin-left: 6px; }
 
 /* ── Sankey tab layout ── */
 .sankey-layout { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
@@ -1752,7 +1768,7 @@ body { font-family: 'DM Sans', -apple-system, sans-serif;
 
 <div class="header">
   <h1>ZA Affordability Flow</h1>
-  <div class="sub">South Africa · May 19 – Jun 9, 2026 · 80 unique users · Activity view</div>
+  <div class="sub">South Africa · Jun 10 – Jun 16, 2026 · 823 unique users · Activity view</div>
   <div class="badges">
     <span class="badge za">🇿🇦 South Africa</span>
     <span class="badge">56 Users</span>
@@ -1765,8 +1781,8 @@ body { font-family: 'DM Sans', -apple-system, sans-serif;
 <div class="dr-bar" id="dr-bar">
   <div class="dr-loaded">
     <span class="dr-dot"></span>
-    <span class="dr-label">Loaded: <strong id="dr-range-label">May 19 – Jun 9, 2026</strong></span>
-    <span class="dr-count" id="dr-user-count">80 users · Activity view</span>
+    <span class="dr-label">Loaded: <strong id="dr-range-label">Jun 10 – Jun 16, 2026</strong></span>
+    <span class="dr-count" id="dr-user-count">823 users · Activity view</span>
   </div>
   <div class="dr-presets">
     <button class="dr-btn" id="drp-7" onclick="selectPreset('7d')">7d</button>
@@ -1843,10 +1859,11 @@ body { font-family: 'DM Sans', -apple-system, sans-serif;
 <div id="tab-backend" class="section">
   <div class="be-wrap">
     <div class="be-funnel-title">ZA Affordability Backend Events Flow</div>
-    <div class="be-funnel-sub">May 19 – Jun 9, 2026 · Sequential cohort · 55 total starters</div>
+    <div class="be-funnel-sub">Jun 10 – Jun 16, 2026 · Sequential cohort · 499 total starters</div>
     <div class="be-legend" id="be-legend"></div>
     <div id="be-funnel"></div>
   </div>
+  <div id="be-analysis" class="be-analysis"></div>
   <div class="source">Backend events · ZA_PROD.DATA.BACKEND_NOTIFICATIONS_FLAT · DISTINCT users per step · date-filtered</div>
 </div>
 
@@ -2609,9 +2626,9 @@ const SCREENS = {"intro": "\napp.innerHTML = DS.screen({\n  appBar: DS.appBar({ 
 const TOP_PATHS = [{"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View \u2192 Selected Files View \u2192 Click Upload Files \u2192 Uploading In Progress View \u2192 Verification In Progress View \u2192 Not Eligible View", "users": 3}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Method Selection View \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View \u2192 Selected Files View \u2192 Click Upload Files \u2192 Uploading In Progress View \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View", "users": 2}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Method Selection View \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View \u2192 Selected Files View", "users": 2}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View \u2192 Selected Files View \u2192 Click Upload Files \u2192 Uploading In Progress View \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 Click Upload Files \u2192 Uploading In Progress View \u2192 Doc Upload Intro View", "users": 2}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Verification In Progress View \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View \u2192 Selected Files View \u2192 File Type Selection View \u2192 Selected Files View \u2192 Click Upload Files", "users": 1}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Method Selection View \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 File Upload Intro View \u2192 Select Bank Connect \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Method Selection View \u2192 Select Bank Connect", "users": 1}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Method Selection View \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 File Upload Intro View \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View \u2192 Selected Files View \u2192 Click Upload Files \u2192 Uploading In Progress View", "users": 1}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View \u2192 Not Eligible View", "users": 1}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Type Selection View \u2192 Selected Files View \u2192 Click Upload Files \u2192 Uploading In Progress View \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload) \u2192 File Upload Intro View \u2192 Select Upload Statement", "users": 1}, {"path": "Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 File Type Selection View \u2192 Click Continue (Doc Upload) \u2192 Intro View \u2192 Click Get Started \u2192 Method Selection View \u2192 Select Bank Connect \u2192 Select Upload Statement \u2192 Doc Upload Intro View \u2192 Click Continue (Doc Upload)", "users": 1}];
 const FUNNEL_A = [["Intro View", 55], ["Click Get Started", 55], ["Method Selection View", 55], ["Select Bank Connect", 51], ["Eligible View", 3]];
 const FUNNEL_B = [["Select Upload Statement", 50], ["Doc Upload Intro View", 50], ["Click Continue (Doc Upload)", 49], ["File Type Selection View", 49], ["Click Upload Files", 47], ["Uploading In Progress View", 47], ["Verification In Progress View", 35], ["Eligible View", 3]];
-const TOTAL = 80;
-// DATA_RANGE: 2026-05-19 to 2026-06-09
-// LAST_REFRESH: 2026-06-09
+const TOTAL = 823;
+// DATA_RANGE: 2026-06-10 to 2026-06-16
+// LAST_REFRESH: 2026-06-16
 
 const TYPE_COLOR = {
   view:    '#3b82f6',
@@ -2631,260 +2648,260 @@ const TRANSITIONS = [
   {
     "s": 1,
     "f": "Intro View",
+    "t": "Eligible View \u2713",
+    "c": 1
+  },
+  {
+    "s": 1,
+    "f": "Intro View",
     "t": "Method Selection View",
-    "c": 80
+    "c": 823
+  },
+  {
+    "s": 1,
+    "f": "Intro View",
+    "t": "Not Eligible",
+    "c": 3
   },
   {
     "s": 1,
     "f": "Intro View",
     "t": "Verification In Progress",
-    "c": 4
+    "c": 32
   },
   {
     "s": 1,
     "f": "Intro View",
     "t": "[DROP-OFF]",
-    "c": 4
+    "c": 12
   },
   {
     "s": 2,
     "f": "Method Selection View",
     "t": "BC \u2192 Switched to Upload",
-    "c": 69
+    "c": 715
   },
   {
     "s": 2,
     "f": "Method Selection View",
     "t": "Eligible View \u2713",
-    "c": 1
-  },
-  {
-    "s": 2,
-    "f": "Method Selection View",
-    "t": "Intro View",
-    "c": 26
-  },
-  {
-    "s": 2,
-    "f": "Method Selection View",
-    "t": "Not Eligible",
     "c": 2
   },
   {
     "s": 2,
     "f": "Method Selection View",
+    "t": "Intro View",
+    "c": 207
+  },
+  {
+    "s": 2,
+    "f": "Method Selection View",
+    "t": "Not Eligible",
+    "c": 6
+  },
+  {
+    "s": 2,
+    "f": "Method Selection View",
     "t": "Verification In Progress",
-    "c": 9
+    "c": 97
   },
   {
     "s": 2,
     "f": "Method Selection View",
     "t": "[DROP-OFF]",
-    "c": 9
+    "c": 119
   },
   {
     "s": 3,
     "f": "BC \u2192 Switched to Upload",
     "t": "Doc Upload Intro View",
-    "c": 69
+    "c": 715
+  },
+  {
+    "s": 3,
+    "f": "BC \u2192 Switched to Upload",
+    "t": "Method Selection View",
+    "c": 2
   },
   {
     "s": 3,
     "f": "BC \u2192 Switched to Upload",
     "t": "Uploading In Progress",
-    "c": 65
+    "c": 658
   },
   {
     "s": 4,
     "f": "Doc Upload Intro View",
     "t": "BC \u2192 Switched to Upload",
-    "c": 65
+    "c": 680
+  },
+  {
+    "s": 4,
+    "f": "Doc Upload Intro View",
+    "t": "Doc Rejected",
+    "c": 1
   },
   {
     "s": 4,
     "f": "Doc Upload Intro View",
     "t": "Intro View",
-    "c": 21
+    "c": 173
   },
   {
     "s": 4,
     "f": "Doc Upload Intro View",
     "t": "Method Selection View",
-    "c": 6
+    "c": 88
+  },
+  {
+    "s": 4,
+    "f": "Doc Upload Intro View",
+    "t": "Verification In Progress",
+    "c": 9
   },
   {
     "s": 4,
     "f": "Doc Upload Intro View",
     "t": "[DROP-OFF]",
-    "c": 5
+    "c": 45
   },
   {
     "s": 5,
     "f": "Uploading In Progress",
     "t": "BC \u2192 Switched to Upload",
-    "c": 2
+    "c": 1
   },
   {
     "s": 5,
     "f": "Uploading In Progress",
     "t": "Doc Rejected",
-    "c": 29
+    "c": 283
   },
   {
     "s": 5,
     "f": "Uploading In Progress",
-    "t": "Intro View",
+    "t": "Eligible View \u2713",
     "c": 1
+  },
+  {
+    "s": 5,
+    "f": "Uploading In Progress",
+    "t": "Not Eligible",
+    "c": 4
   },
   {
     "s": 5,
     "f": "Uploading In Progress",
     "t": "Verification In Progress",
-    "c": 44
-  },
-  {
-    "s": 5,
-    "f": "Uploading In Progress",
-    "t": "[DROP-OFF]",
-    "c": 1
+    "c": 490
   },
   {
     "s": 6,
     "f": "Doc Rejected",
     "t": "[DROP-OFF]",
-    "c": 29
-  },
-  {
-    "s": 6,
-    "f": "Verification In Progress",
-    "t": "Affordability Failed",
-    "c": 2
+    "c": 284
   },
   {
     "s": 6,
     "f": "Verification In Progress",
     "t": "Eligible View \u2713",
-    "c": 16
+    "c": 106
   },
   {
     "s": 6,
     "f": "Verification In Progress",
     "t": "Intro View",
-    "c": 4
+    "c": 35
   },
   {
     "s": 6,
     "f": "Verification In Progress",
     "t": "Method Selection View",
-    "c": 5
+    "c": 89
   },
   {
     "s": 6,
     "f": "Verification In Progress",
     "t": "Not Eligible",
-    "c": 21
+    "c": 374
   },
   {
     "s": 6,
     "f": "Verification In Progress",
     "t": "[DROP-OFF]",
-    "c": 15
-  },
-  {
-    "s": 7,
-    "f": "Affordability Failed",
-    "t": "Method Selection View",
-    "c": 3
-  },
-  {
-    "s": 7,
-    "f": "Affordability Failed",
-    "t": "[DROP-OFF]",
-    "c": 3
+    "c": 76
   },
   {
     "s": 7,
     "f": "Doc Rejected",
     "t": "BC \u2192 Switched to Upload",
-    "c": 26
+    "c": 224
   },
   {
     "s": 7,
     "f": "Doc Rejected",
     "t": "Intro View",
-    "c": 14
+    "c": 141
   },
   {
     "s": 7,
     "f": "Doc Rejected",
     "t": "Method Selection View",
-    "c": 10
+    "c": 103
+  },
+  {
+    "s": 7,
+    "f": "Doc Rejected",
+    "t": "Not Eligible",
+    "c": 3
   },
   {
     "s": 7,
     "f": "Doc Rejected",
     "t": "Verification In Progress",
-    "c": 1
+    "c": 12
   },
   {
     "s": 7,
     "f": "Doc Rejected",
     "t": "[DROP-OFF]",
-    "c": 12
-  },
-  {
-    "s": 7,
-    "f": "Eligible View \u2713",
-    "t": "Intro View",
-    "c": 2
+    "c": 75
   },
   {
     "s": 7,
     "f": "Eligible View \u2713",
     "t": "Not Eligible",
-    "c": 1
+    "c": 82
   },
   {
     "s": 7,
     "f": "Eligible View \u2713",
     "t": "[DROP-OFF]",
-    "c": 17
+    "c": 110
   },
   {
     "s": 7,
     "f": "Not Eligible",
-    "t": "Affordability Failed",
-    "c": 4
+    "t": "BC \u2192 Switched to Upload",
+    "c": 2
   },
   {
     "s": 7,
     "f": "Not Eligible",
     "t": "Intro View",
-    "c": 1
-  },
-  {
-    "s": 7,
-    "f": "Not Eligible",
-    "t": "Method Selection View",
-    "c": 5
+    "c": 2
   },
   {
     "s": 7,
     "f": "Not Eligible",
     "t": "[DROP-OFF]",
-    "c": 16
-  },
-  {
-    "s": 8,
-    "f": "Affordability Failed",
-    "t": "[DROP-OFF]",
-    "c": 6
+    "c": 469
   },
   {
     "s": 8,
     "f": "Not Eligible",
     "t": "[DROP-OFF]",
-    "c": 24
+    "c": 472
   }
 ];
 
@@ -3227,9 +3244,9 @@ if (document.readyState === 'loading') {
 }
 
 // ── Date range bar ───────────────────────────────────────────────────────
-const LOADED_START = new Date('2026-05-19');
-const LOADED_END   = new Date('2026-06-09');
-const LOADED_USERS = 80;
+const LOADED_START = new Date('2026-06-10');
+const LOADED_END   = new Date('2026-06-16');
+const LOADED_USERS = 823;
 const PRESET_DAYS  = { '7d': 7, '14d': 14, '30d': 30 };
 
 function fmtDate(d) {
@@ -3278,7 +3295,7 @@ function showTab(name, btn) {
   btn.classList.add('active');
   if (name === 'sankey')  { setTimeout(function(){ if(typeof renderStepFlow==='function') renderStepFlow(); }, 50); }
   if (name === 'screens')  setTimeout(renderScreenGallery, 50);
-  if (name === 'backend')  setTimeout(renderBEFunnel, 50);
+  if (name === 'backend')  setTimeout(function() { renderBEFunnel(); renderBEAnalysis(); }, 50);
 }
 
 // ── Screen preview (below diagram) ───────────────────────────────────────
@@ -3551,19 +3568,74 @@ function renderScreenGallery() {
 
 // ── Backend Events Funnel ─────────────────────────────────────────────────
 const BE_FUNNEL_DATA = [
-  { step: '1. Bank Statements Retrieved', total: 55, bc: 37, mu: 14, tr: 4 },
-  { step: '2. Income Check',              total: 53, bc: 35, mu: 14, tr: 4 },
-  { step: '3. Income Success',            total: 38, bc: 24, mu: 12, tr: 2 },
-  { step: '4. Norm Expenses Calculated',  total: 38, bc: 24, mu: 12, tr: 2 },
-  { step: '5. Credit Profile Check',      total: 36, bc: 22, mu: 12, tr: 2 },
-  { step: '6. Credit Profile Success',    total: 36, bc: 22, mu: 12, tr: 2 },
-  { step: '7. Decision (Approved)',       total:  9, bc:  5, mu:  3, tr: 1 },
+  { step: '1. Bank Statements Retrieved', total: 499, mu: 397, tr: 102 },
+  { step: '2. Income Check',              total: 472, mu: 385, tr:  87 },
+  { step: '3. Income Success',            total: 394, mu: 331, tr:  63 },
+  { step: '4. Norm Expenses Calculated',  total: 394, mu: 331, tr:  63 },
+  { step: '5. Credit Profile Check',      total: 392, mu: 329, tr:  63 },
+  { step: '6. Credit Profile Success',    total: 392, mu: 329, tr:  63 },
+  { step: '7. Decision (Approved)',       total:  75, mu:  66, tr:   9 },
+  { step: '8. First Loan Offer',          total:  14, mu:  11, tr:   3 },
 ];
 const BE_METHODS = [
-  { key: 'bc', label: 'null (unknown)',  color: '#f97316' },
   { key: 'mu', label: 'Manual Upload',  color: '#6366f1' },
   { key: 'tr', label: 'TruID',          color: '#14b8a6' },
 ];
+
+const BE_FAILURE_ANALYSIS = [
+  {
+    id: 'decision',
+    step: 'Credit Profile Retrieved → Decision',
+    usersIn: 392,
+    usersOut: 75,
+    source: 'TransUnion',
+    reasons: [
+      { label: 'Adverse credit records',           code: 'affordability_credit_adverse_records',           users: 168, pct: 53.3, color: '#f87171' },
+      { label: 'Discretionary income below minimum', code: 'affordability_discretionary_income_below_minimum', users: 100, pct: 31.6, color: '#fb923c' },
+      { label: 'Credit delinquency',               code: 'affordability_credit_delinquency',               users:  46, pct: 14.6, color: '#facc15' },
+    ],
+    note: 'All declines sourced from TransUnion bureau via BE_AFFORDABILITY_DEBT_REVIEW_DECLINED, which fires before the final DECISION event.',
+  },
+  {
+    id: 'income',
+    step: 'Bank Statements Retrieved → Income Verified',
+    usersIn: 491,
+    usersOut: 466,
+    source: null,
+    reasons: [
+      { label: 'Short statement (insufficient history)', code: 'BE_AFFORDABILITY_SHORT_STATEMENT_REJECTED', users: 69, pct: 100, color: '#fb923c' },
+    ],
+    note: '69 users hit short statement rejection. ~44 retry and pass income verification — net permanent drop-off ~25 users. No further reason breakdown available in the data (all reason fields null on this event).',
+  },
+];
+
+function renderBEAnalysis() {
+  var el = document.getElementById('be-analysis');
+  if (!el) return;
+  var html = '<div class="be-analysis-title">Failure Analysis</div>' +
+    '<div class="be-analysis-sub">Root causes for critical drop-off steps · source: ZA_PROD.DATA.BACKEND_NOTIFICATIONS_FLAT</div>';
+  BE_FAILURE_ANALYSIS.forEach(function(drop) {
+    var declined = drop.usersIn - drop.usersOut;
+    var dropPct = Math.round(declined / drop.usersIn * 100);
+    var sourceChip = drop.source ? '<span class="be-source-chip">' + drop.source + '</span>' : '';
+    html += '<div class="be-drop">';
+    html += '<div class="be-drop-header">';
+    html += '<span class="be-drop-step">' + drop.step + sourceChip + '</span>';
+    html += '<span class="be-drop-badge">↓ ' + dropPct + '% drop</span>';
+    html += '<span class="be-drop-count">' + declined + ' users lost of ' + drop.usersIn + '</span>';
+    html += '</div>';
+    drop.reasons.forEach(function(r) {
+      html += '<div class="be-reason-row">';
+      html += '<div class="be-reason-label">' + r.label + '<br><span class="be-reason-code">' + r.code + '</span></div>';
+      html += '<div class="be-reason-bar-wrap"><div class="be-reason-bar-fill" style="width:' + r.pct + '%;background:' + r.color + '"></div></div>';
+      html += '<div class="be-reason-stat">' + r.users + ' · ' + r.pct + '%</div>';
+      html += '</div>';
+    });
+    if (drop.note) html += '<div class="be-drop-note">' + drop.note + '</div>';
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
 
 function renderBEFunnel() {
   var funnelEl = document.getElementById('be-funnel');
@@ -3614,6 +3686,7 @@ renderFunnel('funnel-a', FUNNEL_A, '#3b82f6');
 renderFunnel('funnel-b', FUNNEL_B, '#14b8a6');
 renderPaths();
 renderBEFunnel();
+renderBEAnalysis();
 </script>
 </body>
 </html>
